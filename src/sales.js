@@ -46,18 +46,24 @@ d3.csv("donn_prix_vente_reqst.csv", (d) => ({
       new Set(data.map((d) => d.CD_PLAGE_PRIX.toString())),
     );
 
-    const width = 1200;
+    const margin = { top: 30, right: 30, bottom: 40, left: 30 };
+    const width = 960;
     const height = 500;
     const svg = d3
       .select("#sales")
       .append("svg")
-      .attr("width", width)
-      .attr("height", height)
-      .append("g");
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    svg.attr("width", width).attr("height", height);
+    svg
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom);
 
-    const g = svg.append("g");
+    const g = svg
+      .append("g")
+      .attr("transform", `translate(${margin.left},${margin.top})`);
 
     const y = d3
       .scaleBand()
@@ -126,7 +132,7 @@ d3.csv("donn_prix_vente_reqst.csv", (d) => ({
     // Legend
     const legend = svg
       .append("g")
-      .attr("transform", `translate(${width - 120}, 0`);
+      .attr("transform", `translate(${width - 120},${margin.top})`);
 
     keys.forEach((key, i) => {
       legend
