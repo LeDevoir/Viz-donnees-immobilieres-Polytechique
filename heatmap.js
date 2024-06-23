@@ -1,6 +1,5 @@
 d3.csv('donn_transf_prop_reqst.csv').then((data) => {
-    // Your D3.js heatmap code here
-          const regionNames = {
+    const regionNames = {
         1: "Bas-Saint-Laurent",
         2: "Saguenay-Lac-Saint-Jean",
         3: "Capitale-Nationale",
@@ -18,7 +17,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         15: "Laurentides",
         16: "Montérégie",
         17: "Centre-du-Québec",
-      };
+    };
 
     data.forEach((d) => {
         d.Month = d3.timeParse("%Y-%m-%d")(d.DT_DEBUT_MOIS);
@@ -28,7 +27,6 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         d.Region = regionNames[+d.ID_REGN_ADMIN];
     });
 
-    // Function to aggregate data
     const aggregateData = (data, timeUnit) => {
         return d3.rollups(
             data,
@@ -38,10 +36,6 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         );
     };
 
-    // Initial aggregation by month
-    let aggregatedData = aggregateData(data, "month");
-
-    // Function to create pivot table
     const createPivotTable = (aggregatedData) => {
         const pivotData = {};
         aggregatedData.forEach(([time, regions]) => {
@@ -53,15 +47,13 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         return pivotData;
     };
 
-    // Create initial pivot table
+    let aggregatedData = aggregateData(data, "month");
     let pivotData = createPivotTable(aggregatedData);
 
-    // Define dimensions
     const margin = { top: 100, right: 50, bottom: 150, left: 200 };
     const width = 1200 - margin.left - margin.right;
     const height = 800 - margin.top - margin.bottom;
 
-    // Append SVG and set dimensions
     const svg = d3
         .select("#heatmap")
         .append("svg")
@@ -70,7 +62,6 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    // Define scales
     const x = d3.scaleBand().range([0, width]).padding(0.01);
     const y = d3.scaleBand().range([height, 0]).padding(0.01);
 
@@ -81,14 +72,12 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
             d3.max(Object.values(pivotData).flatMap((d) => Object.values(d))),
         ]);
 
-    // Extract unique times and regions
     const times = Array.from(new Set(data.map((d) => d.MonthFormatted)));
     const regions = Object.keys(pivotData);
 
     x.domain(times);
     y.domain(regions);
 
-    // Append axes
     const xAxis = svg
         .append("g")
         .attr("class", "x axis")
@@ -108,14 +97,18 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
 
     svg.append("g").attr("class", "y axis").call(d3.axisLeft(y));
 
-    // Tooltip
     const tooltip = d3
         .select("body")
         .append("div")
         .attr("class", "tooltip")
-        .style("opacity", 0);
+        .style("opacity", 0)
+        .style("position", "absolute")
+        .style("background-color", "white")
+        .style("border", "1px solid black")
+        .style("padding", "5px")
+        .style("border-radius", "5px")
+        .style("pointer-events", "none");
 
-    // Function to update heatmap
     const updateHeatmap = (pivotData, timeUnit) => {
         x.domain(
             Array.from(
@@ -152,16 +145,9 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
                     .on("mouseover", function (event, d) {
                         tooltip.transition().duration(200).style("opacity", 0.9);
                         tooltip
-                            .html(
-                                `Region: ${region}<br>${
-                                    timeUnit.charAt(0).toUpperCase() +
-                                    timeUnit.slice(1)
-                                }: ${time}<br>Requests: ${
-                                    pivotData[region][time] || 0
-                                }`
-                            )
-                            .style("left", event.pageX + 15 + "px")
-                            .style("top", event.pageY - 28 + "px");
+                            .html(`Region: ${region}<br>${timeUnit.charAt(0).toUpperCase() + timeUnit.slice(1)}: ${time}<br>Requests: ${pivotData[region][time] || 0}`)
+                            .style("left", (event.pageX + 10) + "px")
+                            .style("top", (event.pageY - 28) + "px");
                     })
                     .on("mouseout", function (d) {
                         tooltip.transition().duration(500).style("opacity", 0);
@@ -170,41 +156,12 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         });
     };
 
-    // Initial heatmap
     updateHeatmap(pivotData, "month");
 
-    // Add slider for z-axis
     const zMax = d3.max(
         Object.values(pivotData).flatMap((d) => Object.values(d))
     );
-    const slider = d3
-        .sliderBottom()
-        .min(0)
-        .max(zMax)
-        .width(300)
-        .ticks(10)
-        .default(zMax)
-        .on("onchange", (val) => {
-            color.domain([0, val]);
-            svg.selectAll("rect").style("fill", function (d) {
-                const region = d3.select(this).attr("y");
-                const time = d3.select(this).attr("x");
-                return color(pivotData[region][time] || 0);
-            });
-            updateLegend(color);
-        });
 
-    const gSlider = d3
-        .select("#slider")
-        .append("svg")
-        .attr("width", 400)
-        .attr("height", 100)
-        .append("g")
-        .attr("transform", "translate(30,30)");
-
-    gSlider.call(slider);
-
-    // Add color selector
     const colorSelector = d3
         .select("#colorSelector")
         .append("select")
@@ -231,7 +188,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         );
         color = d3
             .scaleSequential(selectedOption.scale)
-            .domain([0, slider.value()]);
+            .domain([0, zMax]);
         svg.selectAll("rect").style("fill", function (d) {
             const region = d3.select(this).attr("y");
             const time = d3.select(this).attr("x");
@@ -240,17 +197,16 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         updateLegend(color);
     });
 
-    // Add color legend
     const legendWidth = 300,
-        legendHeight = 10;
+        legendHeight = 50;
 
     const legendSvg = d3
-        .select("#heatmap")
+        .select("#legend")
         .append("svg")
         .attr("width", legendWidth + margin.left + margin.right)
-        .attr("height", 50)
+        .attr("height", legendHeight + 40)
         .append("g")
-        .attr("transform", `translate(${margin.left}, 10)`);
+        .attr("transform", `translate(${margin.left}, 20)`);
 
     const legendScale = d3
         .scaleLinear()
@@ -296,7 +252,32 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .attr("transform", `translate(0, ${legendHeight})`)
         .call(legendAxis);
 
-    // Add explanatory legend
+    legendSvg
+        .append("text")
+        .attr("x", legendWidth / 2)
+        .attr("y", legendHeight + 30)
+        .attr("text-anchor", "middle")
+        .attr("class", "text-sm text-gray-700")
+        .text("Number of Requests");
+
+    function updateLegend(color) {
+        const legendGradient = legendSvg.select("defs linearGradient");
+        legendGradient
+            .selectAll("stop")
+            .data([
+                { offset: "0%", color: color(0) },
+                { offset: "100%", color: color(zMax) },
+            ])
+            .join("stop")
+            .attr("offset", (d) => d.offset)
+            .attr("stop-color", (d) => d.color);
+
+        explanatoryLegend
+            .selectAll("rect")
+            .data([0, zMax / 2, zMax])
+            .style("fill", (d) => color(d));
+    }
+
     const explanatoryLegend = d3
         .select("#heatmap")
         .append("svg")
@@ -345,25 +326,6 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .attr("y", 15)
         .text("High number of requests");
 
-    function updateLegend(color) {
-        const legendGradient = legendSvg.select("defs linearGradient");
-        legendGradient
-            .selectAll("stop")
-            .data([
-                { offset: "0%", color: color(0) },
-                { offset: "100%", color: color(zMax) },
-            ])
-            .join("stop")
-            .attr("offset", (d) => d.offset)
-            .attr("stop-color", (d) => d.color);
-
-        explanatoryLegend
-            .selectAll("rect")
-            .data([0, zMax / 2, zMax])
-            .style("fill", (d) => color(d));
-    }
-
-    // Time unit selector
     d3.select("#timeSelector").on("change", function () {
         const timeUnit = this.value;
         aggregatedData = aggregateData(data, timeUnit);
