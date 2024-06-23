@@ -126,7 +126,7 @@ d3.csv("donn_prix_vente_reqst.csv", (d) => ({
     // Legend
     const legend = svg
       .append("g")
-      .attr("transform", `translate(${width - 120},${margin.top})`);
+      .attr("transform", `translate(${width - 120}, 0`);
 
     keys.forEach((key, i) => {
       legend
