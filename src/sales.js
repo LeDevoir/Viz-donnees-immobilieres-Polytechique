@@ -46,9 +46,9 @@ d3.csv("donn_prix_vente_reqst.csv", (d) => ({
       new Set(data.map((d) => d.CD_PLAGE_PRIX.toString())),
     );
 
-    const margin = { top: 30, right: 30, bottom: 40, left: 30 };
-    const width = 960;
-    const height = 500;
+    const margin = { top: 20, right: 30, bottom: 40, left: 150 };
+    const width = 1200 - margin.left - margin.right;
+    const height = 500 - margin.top - margin.bottom;
     const svg = d3
       .select("#sales")
       .append("svg")
