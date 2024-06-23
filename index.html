@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -6,25 +6,69 @@
     <title>Visualization Project</title>
     <link rel="stylesheet" href="styles.css" />
     <script src="https://d3js.org/d3.v6.min.js"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@4.12.7/dist/full.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body>
-    <div class="sidebar">
-      <button onclick="loadVisualization('main')">Menu</button>
-      <button onclick="loadVisualization('heatmap')">Heatmap</button>
-      <button onclick="loadVisualization('visualization1')">
-        Visualization 1
+  <body
+    class="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]"
+  >
+    <div class="flex h-full flex-col gap-4 p-4 bg-neutral-400">
+      <button
+        class="p-2 font-bold btn btn-active"
+        onclick="loadVisualization('main')"
+      >
+        Acceuil
       </button>
-      <button onclick="loadVisualization('visualization2')">
-        Visualization 2
+      <button
+        class="p-2 font-bold btn btn-active"
+        onclick="loadVisualization('heatmap')"
+      >
+        Transferts
       </button>
-      <button onclick="loadVisualization('visualization3')">
-        Visualization 3
+      <button
+        class="p-2 font-bold btn btn-active"
+        onclick="loadVisualization('sales')"
+      >
+        Ventes
+      </button>
+      <button
+        class="p-2 font-bold btn btn-active"
+        onclick="loadVisualization('visualization2')"
+      >
+        Difficultés financières
+      </button>
+      <button
+        class="p-2 font-bold btn btn-active"
+        onclick="loadVisualization('visualization3')"
+      >
+        Hypothèques
       </button>
     </div>
-    <div class="content" id="content">
+    <div class="flex-1 p-4" id="content">
       <h1>Welcome to the Visualization Project</h1>
-      <p>Select a visualization from the sidebar.</p>
+      <p>
+        Bienvenue sur la page web de notre outil de visualisation de données
+        immobilières!
+      </p>
+      <p>
+        En collaboration avec Samuel Ouvrard du journal Le Devoir, cet outil a
+        été développé par George Salib, Zakaria Sbai-Chkirid, Khalil Beddouch,
+        Nassim Boughedaoui, Abderahim Laribi et Artour Benevolenski dans le
+        cadre du cours INF8808E à Polytechnique Montréal.
+      </p>
+      <p>
+        Notre outil de visualisation de données immobilières offre une multitude
+        d'informations clés pour aider le grand public ainsi que les
+        journalistes chez Le Devoir à analyser le marché immobilier par région.
+        Ces informations incluent la valeur d'achat, le nombre de ventes, les
+        transferts de propriétés, le nombre d'hypothèques, le nombre de
+        faillites et bien d'autres.
+      </p>
     </div>
-    <script src="main.js"></script>
+    <script src="index.js"></script>
   </body>
 </html>
