@@ -1,0 +1,33 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    margin: 0;
+    height: 100vh;
+}
+
+.sidebar {
+    width: 200px;
+    background-color: #333;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar button {
+    background-color: #444;
+    color: white;
+    border: none;
+    padding: 15px;
+    margin: 5px 0;
+    cursor: pointer;
+    text-align: left;
+}
+
+.sidebar button:hover {
+    background-color: #555;
+}
+
+.content {
+    flex: 1;
+    padding: 20px;
+}

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Visualization Project</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+  </head>
+  <body>
+    <div class="sidebar">
+      <button onclick="loadVisualization('main')">Menu</button>
+      <button onclick="loadVisualization('heatmap')">Heatmap</button>
+      <button onclick="loadVisualization('visualization1')">
+        Visualization 1
+      </button>
+      <button onclick="loadVisualization('visualization2')">
+        Visualization 2
+      </button>
+      <button onclick="loadVisualization('visualization3')">
+        Visualization 3
+      </button>
+    </div>
+    <div class="content" id="content">
+      <h1>Welcome to the Visualization Project</h1>
+      <p>Select a visualization from the sidebar.</p>
+    </div>
+    <script src="main.js"></script>
+  </body>
+</html>
