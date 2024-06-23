@@ -1,0 +1,41 @@
+{
+  "name": "visualization-project",
+  "version": "1.0.1",
+  "description": "A D3.js Visualization Project. Includes tools for development and deployment.",
+  "main": "index.html",
+  "scripts": {
+    "start": "http-server -p 8080",
+    "build": "parcel build ./index.html",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "d3": "^7.6.1",
+    "d3-tip": "^0.9.1",
+    "http-server": "^0.12.3",
+    "parcel-bundler": "^1.12.4",
+    "parcel-plugin-static-files-copy": "^2.4.3"
+  },
+  "devDependencies": {
+    "eslint": "^7.4.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-jsdoc": "^29.1.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "@types/d3-tip": "^3.5.5"
+  },
+  "staticFiles": {
+    "staticPath": [
+      "data"
+    ]
+  },
+  "author": "team 1",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Alpyg/inf8808e-project.git"
+  }
+}
+
