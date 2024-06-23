@@ -9,11 +9,10 @@ function loadVisualization(view) {
   switch (view) {
     case "main":
       content.innerHTML = `
-        <h1>Welcome to the Visualization Project</h1>
-        <p>
+        <h1 class="text-lg font-bold">
           Bienvenue sur la page web de notre outil de visualisation de données
           immobilières!
-        </p>
+        </h1>
         <p>
           En collaboration avec Samuel Ouvrard du journal Le Devoir, cet outil a
           été développé par George Salib, Zakaria Sbai-Chkirid, Khalil Beddouch,
