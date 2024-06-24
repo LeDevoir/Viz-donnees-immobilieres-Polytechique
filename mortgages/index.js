@@ -110,14 +110,14 @@ const svgContainer = graph.select('.stackedArea-svg');
 const margin = { top: 50, right: 30, bottom: 70, left: 80 };
 
 function setSizing() {
-  const margin = { top: 20, right: 30, bottom: 80, left: 150 };
+  const margin = { top: 20, right: 30, bottom: 80, left: 70 };
   const bounds = graph.node().getBoundingClientRect();
   const width = bounds.width - margin.left - margin.right;
-  const height = 500 - margin.top - margin.bottom;
+  const height = 600 - margin.top - margin.bottom;
 
   svgContainer
     .attr('width', bounds.width)
-    .attr('height', 500);
+    .attr('height', 600);
 
   const svg = svgContainer.selectAll('g').data([0])
     .join('g')

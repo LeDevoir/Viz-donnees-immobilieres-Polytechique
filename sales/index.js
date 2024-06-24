@@ -46,9 +46,9 @@ d3.csv("donn_prix_vente_reqst.csv", (d) => ({
       new Set(data.map((d) => d.CD_PLAGE_PRIX.toString())),
     );
 
-    const margin = { top: 20, right: 30, bottom: 40, left: 150 };
+    const margin = { top: 20, right: 80, bottom: 100, left: 150 };
     const width = 1200 - margin.left - margin.right;
-    const height = 500 - margin.top - margin.bottom;
+    const height = 550 - margin.top - margin.bottom;
     const svg = d3
       .select("#content")
       .append("svg")
@@ -60,6 +60,26 @@ d3.csv("donn_prix_vente_reqst.csv", (d) => ({
     const g = svg
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
+
+      // Add x-axis label
+    svg
+      .append("text")
+      .attr("class", "x-axis-label")
+      .attr("text-anchor", "middle")
+      .attr("x", width / 2)
+      .attr("y", height + 80) // Adjust this value as needed
+      .text("Nombre d'achats par gamme de prix");
+
+    // Add y-axis label
+    svg
+      .append("text")
+      .attr("class", "y-axis-label")
+      .attr("text-anchor", "middle")
+      .attr("transform", "rotate(-90)")
+      .attr("x", -height / 2)
+      .attr("y", -30) // Adjust this value as needed
+      .text("Régions administratives du Québec");
+
 
     const y = d3
       .scaleBand()
