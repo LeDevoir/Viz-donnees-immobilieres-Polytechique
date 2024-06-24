@@ -106,7 +106,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .attr("class", "axis-label text-xl font-semibold")
         .attr("transform", `translate(${width / 2}, ${height + margin.bottom - 20})`)
         .style("text-anchor", "middle")
-        .text("Months");
+        .text("Mois");
 
     // Add Y Axis Label
     svg.append("text")
@@ -116,7 +116,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .attr("x", 0 - height / 2)
         .attr("dy", "1em")
         .style("text-anchor", "middle")
-        .text("Regions");
+        .text("Régions");
 
     const tooltip = d3
         .select("body")
