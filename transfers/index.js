@@ -232,9 +232,6 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .axisRight(legendScale)
         .ticks(20)
         .tickFormat(d3.format(".0f"));
-
-    const colorScale = d3.scaleSequential(d3.interpolateViridis)
-    .domain(d3.extent(data, d => d.value));
     
     const gradient = legendSvg.select("defs")
     .select("linearGradient")
