@@ -59,14 +59,14 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     const margin = { top: 50, right: 100, bottom: 150, left: 200 };
     const width = 800 - margin.left - margin.right;
     const height = 600 - margin.top - margin.bottom;
-
+    const transMarginLeft=margin.left+30;
     const svg = d3
         .select("#heatmap")
         .append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        .attr("transform", "translate(" + transMarginLeft + "," + margin.top + ")");
 
     const x = d3.scaleBand().range([0, width]).padding(0.01);
     const y = d3.scaleBand().range([height, 0]).padding(0.01);
