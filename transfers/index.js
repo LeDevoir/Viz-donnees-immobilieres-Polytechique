@@ -101,7 +101,8 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .selectAll("text")
         .attr("transform", "rotate(-45)")
         .style("text-anchor", "end");
-
+    document.addEventListener("DOMContentLoaded", function() {
+    const initialTimeUnit = d3.select("#timeSelector").property("value");
     // Add Y Axis
     svg.append("g").attr("class", "y axis text-sm").call(d3.axisLeft(y));
     function getAxisLabel(timeUnit) {
