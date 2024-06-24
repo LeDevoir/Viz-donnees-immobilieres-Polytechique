@@ -34,7 +34,9 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .domain([0, zMax]);
     d3.select("#startDate").attr("min", d3.timeFormat("%Y-%m-%d")(minDate)).attr("max", d3.timeFormat("%Y-%m-%d")(maxDate));
     d3.select("#endDate").attr("min", d3.timeFormat("%Y-%m-%d")(minDate)).attr("max", d3.timeFormat("%Y-%m-%d")(maxDate));
-
+    
+    const regionSelector = d3.select("#regionSelector");
+    regionSelector.selectAll("option").remove(); 
     const aggregateData = (data, timeUnit) => {
         return d3.rollups(
             data,
@@ -99,16 +101,35 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .selectAll("text")
         .attr("transform", "rotate(-45)")
         .style("text-anchor", "end");
+    document.addEventListener("DOMContentLoaded", function() {
+    const initialTimeUnit = d3.select("#timeSelector").property("value");
+        // Initialize the SVG and its elements
+    const svg = d3.select("#heatmap").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", translate(${margin.left}, ${margin.top}));
 
+    // Add the X-axis label with the initial time unit
+    svg.append("text")
+        .attr("class", "axis-label text-xl font-semibold")
+        .attr("transform", translate(${width / 2}, ${height + margin.bottom - 20}))
+        .style("text-anchor", "middle")
+        .text(getAxisLabel(initialTimeUnit));  // Using the function to set the initial label
+
+    // Setup other parts of your D3 visualization here
+});
     // Add Y Axis
     svg.append("g").attr("class", "y axis text-sm").call(d3.axisLeft(y));
-
+    function getAxisLabel(timeUnit) {
+    return timeUnit === "month" ? "Mois" : "Année";
+}
     // Add X Axis Label
     svg.append("text")
         .attr("class", "axis-label text-xl font-semibold")
-        .attr("transform", `translate(${width / 2}, ${height + margin.bottom - 20})`)
+        .attr("transform", translate(${width / 2}, ${height + margin.bottom - 20}))
         .style("text-anchor", "middle")
-        .text("Mois");
+        .text(getAxisLabel(initialTimeUnit));
 
     // Add Y Axis Label
     svg.append("text")
@@ -129,6 +150,11 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .style("pointer-events", "none");
 
     const updateHeatmap = (pivotData, timeUnit, selectedRegions) => {
+       const xAxisLabel = timeUnit === "month" ? "Mois" : "Année";
+
+    // Update the text of the X-axis label
+      d3.select(".axis-label")
+      .text(xAxisLabel);
         const times = Array.from(new Set(data.map((d) => timeUnit === "month" ? d.MonthFormatted : d.Year)));
         x.domain(times);
         xAxis
@@ -166,7 +192,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
                     .on("mouseover", function (event, d) {
                         tooltip.transition().duration(200).style("opacity", 0.9);
                         tooltip
-                            .html(`Region: ${region}<br>${timeUnit.charAt(0).toUpperCase() + timeUnit.slice(1)}: ${time}<br>Requests: ${pivotData[region][time] || 0}`)
+                            .html(Region: ${region}<br>${timeUnit.charAt(0).toUpperCase() + timeUnit.slice(1)}: ${time}<br>Requests: ${pivotData[region][time] })
                             .style("left", (event.pageX + 10) + "px")
                             .style("top", (event.pageY - 28) + "px");
                     })
@@ -221,7 +247,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
                 .attr("width", legendWidth + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
-        .attr("transform", `translate(10, ${margin.top})`);
+        .attr("transform", translate(10, ${margin.top}));
 
     const legendScale = d3
         .scaleLinear()
@@ -276,7 +302,7 @@ legendGradient.selectAll("stop")
     legendSvg
         .append("g")
         .attr("class", "axis text-sm")
-        .attr("transform", `translate(${legendWidth}, 0)`)
+        .attr("transform", translate(${legendWidth}, 0))
         .call(legendAxis);
 
     legendSvg
@@ -320,18 +346,23 @@ legendGradient.selectAll("stop")
     }
 
     
-    const regionSelector = d3.select("#regionSelector");
-    regionSelector
-        .selectAll("option")
+  regionSelector
+        .append("option")
+        .attr("value", "Tout")
+        .text("Tout");
+   
+
+regionSelector.selectAll(null)
         .data(regions)
         .enter()
         .append("option")
-        .attr("value", (d) => d)
-        .text((d) => d);
+        .attr("value", d => d)
+        .text(d => d);
+       
 
     // Add the "All" option for region selection
     
-    regionSelector.insert("option", ":first-child");
+
 
     const filterDataByDate = (data, startDate, endDate) => {
         return data.filter(d => {
@@ -344,6 +375,8 @@ legendGradient.selectAll("stop")
     // Update heatmap on region selection change
     regionSelector.on("change", function() {
         const selectedRegions = Array.from(this.selectedOptions, option => option.value);
+        const selectedTimeUnit = d3.select(this).property("value");
+        d3.select(".axis-label").text(getAxisLabel(selectedTimeUnit));
         updateHeatmap(pivotData, d3.select("#timeSelector").property("value"), selectedRegions);
         updateGradient(data); 
     });
