@@ -61,8 +61,8 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     let aggregatedData = aggregateData(data, "month");
     let pivotData = createPivotTable(aggregatedData);
 
-    const margin = { top: 50, right: 100, bottom: 150, left: 200 };
-    const width = 800 - margin.left - margin.right;
+    const margin = { top: 50, right: 100, bottom: 150, left: 145 };
+    const width = 940 - margin.left - margin.right;
     const height = 600 - margin.top - margin.bottom;
     const transMarginLeft=margin.left+100;
     const svg = d3
@@ -126,21 +126,23 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     return timeUnit === "month" ? "Mois" : "Année";
 }
     // Add X Axis Label
-    svg.append("text")
-        .attr("class", "axis-label text-xl font-semibold")
-        .attr("transform", `translate(${width / 2}, ${height + margin.bottom - 20})`)
-        .style("text-anchor", "middle")
-        .text(getAxisLabel(initialTimeUnit));
 
-    // Add Y Axis Label
     svg.append("text")
-        .attr("class", "axis-label text-xl font-semibold")
-        .attr("transform", "rotate(-90)")
-        .attr("y", 0 - margin.left -30)
-        .attr("x", 0 - height / 2)
-        .attr("dy", "1em")
-        .style("text-anchor", "middle")
-        .text("Régions");
+    .attr("class", "axis-label text-xl font-semibold")
+    .attr("text-anchor", "middle")
+    .attr("x", width / 2)
+    .attr("y", height + 88) // Adjust this value as needed
+    .text(getAxisLabel(initialTimeUnit));
+
+    // Add y-axis label
+    svg.append("text")
+    .attr("class", "axis-label text-xl font-semibold")
+    .attr("text-anchor", "middle")
+    .attr("transform", "rotate(-90)")
+    .attr("x", -height / 2)
+    .attr("y", -220) // Adjust this value as needed
+    .text("Régions");
+    
 
     const tooltip = d3
         .select("body")
