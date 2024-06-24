@@ -237,8 +237,8 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     .select("linearGradient")
     .selectAll("stop")
     .data([
-        {offset: "0%", color: colorScale(zMin), opacity: 0.2},
-        {offset: "50%", color: colorScale((zMin + zMax) / 2), opacity: 0.6},
+        {offset: "0%", color: colorScale(0), opacity: 0.2},
+        {offset: "50%", color: colorScale((0 + zMax) / 2), opacity: 0.6},
         {offset: "100%", color: colorScale(zMax), opacity: 1}
     ])
     .join("stop")
