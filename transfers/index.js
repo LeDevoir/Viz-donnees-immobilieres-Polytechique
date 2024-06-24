@@ -161,8 +161,8 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
                     .style("fill", color(pivotData[region][time] || 0))
                     .style("stroke-width", 2)
                     .style("stroke", "#e2e8f0")
+                   
                     .style("opacity", 0.8)
-                    .on("mouseover", function
                     .on("mouseover", function (event, d) {
                         tooltip.transition().duration(200).style("opacity", 0.9);
                         tooltip
