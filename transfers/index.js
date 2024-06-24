@@ -63,7 +63,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     const svg = d3
         .select("#heatmap")
         .append("svg")
-        .attr("width", width + margin.left + margin.right+20)
+        .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -112,7 +112,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     const yAxisLabel = svg.append("text")
         .attr("class", "axis-label text-xl font-semibold")
         .attr("transform", "rotate(-90)")
-        .attr("y", -margin.left + 20)
+        .attr("y", -margin.left + 10)
         .attr("x", -height / 2)
         .attr("dy", "1em")
         .style("text-anchor", "middle")
