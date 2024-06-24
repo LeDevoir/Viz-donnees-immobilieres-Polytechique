@@ -63,7 +63,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     const svg = d3
         .select("#heatmap")
         .append("svg")
-        .attr("width", width + margin.left + margin.right)
+        .attr("width", width + margin.left + margin.right+20)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
