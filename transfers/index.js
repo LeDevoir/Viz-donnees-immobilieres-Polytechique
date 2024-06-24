@@ -324,8 +324,8 @@ legendGradient.selectAll("stop")
     
   regionSelector
         .append("option")
-        .attr("value", "all")
-        .text("All");
+        .attr("value", "Tout")
+        .text("Tout");
    
 
 regionSelector.selectAll(null)
