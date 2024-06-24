@@ -79,7 +79,6 @@ function prepareStackedData(
   );
   const data = filterRegions(filteredData, regionIdsWanted);
   const groupedData = d3.group(data, (d) => new Date(d.DT_DEBUT_MOIS));
-
   const stackedData = Array.from(groupedData, ([key, values]) => {
     const entry = { date: key };
     values.forEach((regionData) => {

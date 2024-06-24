@@ -1,3 +1,4 @@
+
 function createScales(width, height) {
   const xScale = d3.scaleTime().range([0, width]);
   const yScale = d3.scaleLinear().range([height, 0]);
@@ -18,6 +19,7 @@ function setScaleDomains(xScale, yScale, data, series) {
 }
 
 function createStack(regionIdsWanteds) {
+  console.log(regionIdsWanteds);
   return d3
     .stack()
     .keys(regionIdsWanteds)
@@ -26,7 +28,7 @@ function createStack(regionIdsWanteds) {
     .offset(d3.stackOffsetNone);
 }
 
-function drawChart(svg, series, xScale, yScale, color, height, width) {
+function drawChart(svg, series, xScale, yScale, color, height, width, regionsMaps) {
   // Draw the layers
   svg
     .selectAll(".layer")
@@ -97,7 +99,7 @@ function drawChart(svg, series, xScale, yScale, color, height, width) {
     .attr("text-anchor", "middle")
     .attr("x", width / 2)
     .attr("y", height + 50) // Adjust this value as needed
-    .text("Temps (Année-Mois)");
+    .text("Temps (Mois-Année)");
 
   // Add y-axis label
   svg
@@ -107,7 +109,7 @@ function drawChart(svg, series, xScale, yScale, color, height, width) {
     .attr("transform", "rotate(-90)")
     .attr("x", -height / 2)
     .attr("y", -50) // Adjust this value as needed
-    .text("Nombre total d'hyphothèques total");
+    .text("Nombre total d'hyphothèques");
 
   series.forEach((layer, i) => {
     svg
@@ -125,6 +127,7 @@ function drawChart(svg, series, xScale, yScale, color, height, width) {
         let regionId = null;
         let value = null;
         Object.keys(d.data).forEach((key) => {
+          console.log(d.data);
           if (typeof d.data[key] === "number") {
             count += d.data[key];
             if (count === d[1]) {
@@ -136,7 +139,7 @@ function drawChart(svg, series, xScale, yScale, color, height, width) {
         // Show the tooltip
         d3.select("#tooltip")
           .html(
-            `Region: ${regionsMap[regionId]} <br>Date: ${d.data.date.toISOString().substring(0, 7)}<br>Nombre d'hypohtèques spécifique à cette région: ${value} <br >Nombre d'hypohtèques total avec les régions inférieurs: ${d[1]}`,
+            `Région: ${regionsMaps[regionId]} <br>Date: ${d.data.date.toISOString().substring(0, 7)}<br>Nombre d'hypohtèques spécifique à cette région: ${value} <br >Nombre d'hypohtèques total avec les régions inférieurs: ${d[1]}`,
           )
           .style("visibility", "visible")
           .style("left", `${event.pageX + 10}px`)

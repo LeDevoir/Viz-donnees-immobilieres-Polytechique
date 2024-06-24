@@ -105,18 +105,18 @@ function setDateFilters(callback, minDate, maxDate) {
 
   // Populate the month dropdowns with all months
   const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
+    "Janvier",
+    "Février",
+    "Mars",
+    "Avril",
+    "Mai",
+    "Juin",
+    "Juillet",
+    "Août",
+    "Septembre",
+    "Octobre",
+    "Novembre",
+    "Décembre",
   ];
   months.forEach((month, index) => {
     const startOption = document.createElement("option");
