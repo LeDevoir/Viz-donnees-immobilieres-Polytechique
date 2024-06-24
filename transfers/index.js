@@ -252,7 +252,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     legend
         .append("stop")
         .attr("offset", "50%")
-        .attr("stop-color", color(zMid))
+        .attr("stop-color", color(zMax))
         .attr("stop-opacity",0.6);
 
     legendSvg
