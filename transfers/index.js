@@ -66,7 +66,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        .attr("transform", "translate(" + (margin.left+25) + "," + margin.top + ")");
 
     const x = d3.scaleBand().range([0, width]).padding(0.05);
     const y = d3.scaleBand().range([height, 0]).padding(0.05);
