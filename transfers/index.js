@@ -175,12 +175,13 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
                     });
             });
         });
-        updateGradient(data);
+        
     };
 
     updateHeatmap(pivotData, "month", regions);
+    updateGradient(data);
 
-    const zMax = d3.max(
+    let zMax = d3.max(
         Object.values(pivotData).flatMap((d) => Object.values(d))
     );
 
