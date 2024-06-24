@@ -56,7 +56,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     let aggregatedData = aggregateData(data, "month");
     let pivotData = createPivotTable(aggregatedData);
 
-    const margin = { top: 50, right: 200, bottom: 150, left: 150 };
+    const margin = { top: 50, right: 150, bottom: 150, left: 200 };
     const width = 800 - margin.left - margin.right;
     const height = 600 - margin.top - margin.bottom;
 
@@ -212,7 +212,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         );
         color = d3
             .scaleSequential(selectedOption.scale)
-                        .domain([0, zMax]);
+            .domain([0, zMax]);
         svg.selectAll("rect").style("fill", function (d) {
             const region = d3.select(this).attr("y");
             const time = d3.select(this).attr("x");
@@ -366,4 +366,3 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         updateHeatmap(pivotData, timeUnit, selectedRegions);
     });
 });
-
