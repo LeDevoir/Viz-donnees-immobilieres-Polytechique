@@ -27,9 +27,9 @@ d3.csv("donn_prix_vente_reqst.csv", (d) => ({
     };
 
     const priceRanges = {
-      1: "moins de 250 000$",
-      2: "250 000$ - 500 000$",
-      3: "plus de 500 000$",
+      1: "Moins de 250 000$",
+      2: "Entre 250 000$ et 500 000$",
+      3: "Plus de 500 000$",
     };
 
     const groupedData = d3.group(data, (d) => d.ID_REGN_ADMIN);
@@ -46,7 +46,7 @@ d3.csv("donn_prix_vente_reqst.csv", (d) => ({
       new Set(data.map((d) => d.CD_PLAGE_PRIX.toString())),
     );
 
-    const margin = { top: 20, right: 80, bottom: 100, left: 150 };
+    const margin = { top: 20, right: 110, bottom: 100, left: 150 };
     const width = 1200 - margin.left - margin.right;
     const height = 550 - margin.top - margin.bottom;
     const svg = d3
