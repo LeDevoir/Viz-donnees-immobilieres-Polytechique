@@ -230,7 +230,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
                 .attr("width", legendWidth + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
-        .attr("transform", translate(10, ${margin.top}));
+        .attr("transform", `translate(10, ${margin.top})`);
 
     const legendScale = d3
         .scaleLinear()
