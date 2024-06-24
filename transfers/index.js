@@ -353,7 +353,7 @@ legendGradient.selectAll("stop")
         .text("Tout");
    
 
-regionSelector.selectAll(null)
+regionSelector.selectAll("Tout")
         .data(regions)
         .enter()
         .append("option")
