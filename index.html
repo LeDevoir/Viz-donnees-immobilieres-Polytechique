@@ -4,8 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Visualization Project</title>
-    <link rel="stylesheet" href="styles.css" />
-    <script src="https://d3-legend.susielu.com/d3-legend.min.js"></script>
+    <link rel="stylesheet" href="/styles.css" />
     <script src="https://d3js.org/d3.v6.min.js"></script>
     <link
       href="https://cdn.jsdelivr.net/npm/daisyui@4.12.7/dist/full.min.css"
@@ -18,37 +17,31 @@
     class="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]"
   >
     <div class="flex h-full flex-col gap-4 p-4 bg-neutral-400">
-      <a class="p-2 font-bold btn btn-neutral" href="/">Acceuil</a>
+      <a class="p-2 font-bold btn" href="/">Acceuil</a>
       <a class="p-2 font-bold btn" href="/transfers">Transferts</a>
-      <a class="p-2 font-bold btn" href="/sales">Ventes</a>
-      <a class="p-2 font-bold btn" href="/difficulties"
-        >Difficultés financières</a
-      >
+      <a class="p-2 font-bold btn btn-neutral" href="/sales">Ventes</a>
+      <a class="p-2 font-bold btn" href="/difficulties">Difficultés financières</a>
       <a class="p-2 font-bold btn" href="/mortgages">Hypothèques</a>
     </div>
-    <div class="flex-1 flex flex-col gap-2 p-4" id="content">
-      <h1 class="text-lg font-bold">
-        Bienvenue sur la page web de notre outil de visualisation de données
-        immobilières!
-      </h1>
-      <p>
-        En collaboration avec Samuel Ouvrard du journal Le Devoir, cet outil a
-        été développé par George Salib, Zakaria Sbai-Chkirid, Khalil Beddouch,
-        Nassim Boughedaoui, Abderahim Laribi et Artour Benevolenski dans le
-        cadre du cours INF8808E à Polytechnique Montréal.
-      </p>
-      <p>
-        Notre outil de visualisation de données immobilières offre une multitude
-        d'informations clés pour aider le grand public ainsi que les
-        journalistes chez Le Devoir à analyser le marché immobilier par région.
-        Ces informations incluent la valeur d'achat, le nombre de ventes, les
-        transferts de propriétés, le nombre d'hypothèques, le nombre de
-        faillites et bien d'autres.
-      </p>
-      
+
+    <div class="flex flex-col flex-1 p-4 bg-gray-100">
+      <div class="controls mb-4 flex items-center">
+        <label for="timeSelector" class="mr-2">Select Time Period:</label>
+        <select id="timeSelector" class="p-2 border rounded-md">
+          <option value="month">Monthly</option>
+          <option value="year">Yearly</option>
+        </select>
+        <label for="regionSelector" class="ml-4 mr-2">Select Regions:</label>
+        <select id="regionSelector" multiple class="p-2 border rounded-md">
+          <option value="all">All</option>
+        </select>
+      </div>
+      <div class="flex flex-row">
+        <div id="heatmap" class="flex-1 bg-white shadow rounded p-4"></div>
+        <div id="legend" class="ml-4"></div>
+      </div>
     </div>
-      
-        
-   
+
+    <script src="heatmap.js"></script>
   </body>
 </html>
