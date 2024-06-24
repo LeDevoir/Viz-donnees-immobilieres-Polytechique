@@ -56,7 +56,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     let aggregatedData = aggregateData(data, "month");
     let pivotData = createPivotTable(aggregatedData);
 
-    const margin = { top: 50, right: 160, bottom: 150, left: 220 };
+    const margin = { top: 50, right: 200, bottom: 150, left: 150 };
     const width = 800 - margin.left - margin.right;
     const height = 600 - margin.top - margin.bottom;
 
@@ -68,8 +68,8 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    const x = d3.scaleBand().range([0, width]).padding(0.01);
-    const y = d3.scaleBand().range([height, 0]).padding(0.01);
+    const x = d3.scaleBand().range([0, width]).padding(0.05);
+    const y = d3.scaleBand().range([height, 0]).padding(0.05);
 
     let color = d3.scaleSequential(d3.interpolateCool)
         .domain([0, d3.max(Object.values(pivotData).flatMap((d) => Object.values(d)))]);
@@ -90,7 +90,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .call(
             d3.axisBottom(x).tickValues(
                 x.domain().filter(function (d, i) {
-                    return !(i % 5);
+                    return !(i % 3);
                 })
             )
         )
@@ -102,18 +102,18 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     svg.append("g").attr("class", "y axis text-sm").call(d3.axisLeft(y));
 
     // Add X Axis Label
-    svg.append("text")
+    const xAxisLabel = svg.append("text")
         .attr("class", "axis-label text-xl font-semibold")
-        .attr("transform", `translate(${width / 2}, ${height + margin.bottom - 20})`)
+        .attr("transform", `translate(${width / 2}, ${height + margin.bottom - 30})`)
         .style("text-anchor", "middle")
         .text("Months");
 
     // Add Y Axis Label
-    svg.append("text")
+    const yAxisLabel = svg.append("text")
         .attr("class", "axis-label text-xl font-semibold")
         .attr("transform", "rotate(-90)")
-        .attr("y", 0 - margin.left-30)
-        .attr("x", 0 - height / 2)
+        .attr("y", -margin.left + 20)
+        .attr("x", -height / 2)
         .attr("dy", "1em")
         .style("text-anchor", "middle")
         .text("Regions");
@@ -121,7 +121,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     const tooltip = d3
         .select("body")
         .append("div")
-        .attr("class", "tooltip")
+        .attr("class", "tooltip p-2 bg-white border rounded-md shadow-lg")
         .style("opacity", 0)
         .style("position", "absolute")
         .style("pointer-events", "none");
@@ -173,6 +173,15 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
                     });
             });
         });
+
+        // Update X Axis Label
+        xAxisLabel.text(timeUnit === "month" ? "Months" : "Years");
+
+        // Update the color scale domain based on the new data
+        color.domain([0, d3.max(Object.values(pivotData).flatMap((d) => Object.values(d)))]);
+
+        // Update the legend with the new color scale
+        updateLegend(color, d3.max(Object.values(pivotData).flatMap((d) => Object.values(d))));
     };
 
     updateHeatmap(pivotData, "month", regions);
@@ -204,12 +213,12 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         color = d3
             .scaleSequential(selectedOption.scale)
             .domain([0, zMax]);
-        svg.selectAll("rect").style("fill", function (d) {
-            const region = d3.select(this).attr("y");
+        svg.selectAll("rect").style("fill", function (
+        const region = d3.select(this).attr("y");
             const time = d3.select(this).attr("x");
             return color(pivotData[region][time] || 0);
         });
-        updateLegend(color);
+        updateLegend(color, zMax);
     });
 
     const legendWidth = 40,
@@ -218,10 +227,10 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     const legendSvg = d3
         .select("#legend")
         .append("svg")
-                .attr("width", legendWidth + margin.right)
+        .attr("width", legendWidth + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
-        .attr("transform", `translate(10, ${margin.top})`);
+        .attr("transform", `translate(${margin.right - 50}, ${margin.top})`);
 
     const legendScale = d3
         .scaleLinear()
@@ -230,10 +239,10 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
 
     const legendAxis = d3
         .axisRight(legendScale)
-        .ticks(10)
+        .ticks(Math.ceil(zMax / 200)) // Adjusting the ticks to have increments of 200
         .tickFormat(d3.format(".0f"));
 
-    const legend = legendSvg
+    const legendGradient = legendSvg
         .append("defs")
         .append("svg:linearGradient")
         .attr("id", "gradient")
@@ -243,13 +252,13 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .attr("y2", "0%")
         .attr("spreadMethod", "pad");
 
-    legend
+    legendGradient
         .append("stop")
         .attr("offset", "0%")
         .attr("stop-color", color(0))
         .attr("stop-opacity", 1);
 
-    legend
+    legendGradient
         .append("stop")
         .attr("offset", "100%")
         .attr("stop-color", color(zMax))
@@ -275,7 +284,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .attr("class", "text-sm font-semibold text-gray-700")
         .text("Number of Requests");
 
-    function updateLegend(color) {
+    function updateLegend(color, zMax) {
         const legendGradient = legendSvg.select("defs linearGradient");
         legendGradient
             .selectAll("stop")
@@ -286,6 +295,9 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
             .join("stop")
             .attr("offset", (d) => d.offset)
             .attr("stop-color", (d) => d.color);
+
+        legendScale.domain([0, zMax]);
+        legendSvg.select(".axis").call(d3.axisRight(legendScale).ticks(Math.ceil(zMax / 200)).tickFormat(d3.format(".0f")));
     }
 
     // Populate region selector with regions
@@ -337,3 +349,4 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         updateHeatmap(pivotData, timeUnit, selectedRegions);
     });
 });
+
