@@ -127,7 +127,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .style("pointer-events", "none");
 
     const updateHeatmap = (pivotData, timeUnit, selectedRegions) => {
-                const times = Array.from(new Set(data.map((d) => timeUnit === "month" ? d.MonthFormatted : d.Year)));
+        const times = Array.from(new Set(data.map((d) => timeUnit === "month" ? d.MonthFormatted : d.Year)));
         x.domain(times);
         xAxis
             .call(
@@ -218,6 +218,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     const legendWidth = 40,
         legendHeight = height;
 
+    const legend
     const legendSvg = d3
         .select("#legend")
         .append("svg")
@@ -233,7 +234,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
 
     const legendAxis = d3
         .axisRight(legendScale)
-        .ticks(10)
+        .ticks(Math.ceil(zMax / 200)) // Adjusting the ticks to have increments of 200
         .tickFormat(d3.format(".0f"));
 
     const legend = legendSvg
@@ -340,5 +341,3 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         updateHeatmap(pivotData, timeUnit, selectedRegions);
     });
 });
-
-       
