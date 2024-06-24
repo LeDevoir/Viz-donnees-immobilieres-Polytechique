@@ -71,7 +71,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     const x = d3.scaleBand().range([0, width]).padding(0.01);
     const y = d3.scaleBand().range([height, 0]).padding(0.01);
 
-    let color = d3.scaleSequential(d3.interpolatePlasma)
+    let color = d3.scaleSequential(d3.interpolateCool)
         .domain([0, d3.max(Object.values(pivotData).flatMap((d) => Object.values(d)))]);
 
     const times = Array.from(new Set(data.map((d) => d.MonthFormatted)));
@@ -129,7 +129,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     const updateHeatmap = (pivotData, timeUnit, selectedRegions) => {
         const times = Array.from(new Set(data.map((d) => timeUnit === "month" ? d.MonthFormatted : d.Year)));
         x.domain(times);
-                xAxis
+        xAxis
             .call(
                 d3.axisBottom(x).tickValues(
                     x.domain().filter(function (d, i) {
@@ -187,7 +187,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .attr("class", "p-2 border rounded-md");
 
     const colorOptions = [
-        { name: "Plasma", scale: d3.interpolatePlasma },
+        { name: "Cool", scale: d3.interpolateCool },
     ];
 
     colorOptions.forEach((option) => {
@@ -218,7 +218,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     const legendSvg = d3
         .select("#legend")
         .append("svg")
-        .attr("width", legendWidth + margin.right)
+                .attr("width", legendWidth + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", `translate(10, ${margin.top})`);
