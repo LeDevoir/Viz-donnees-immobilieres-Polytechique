@@ -46,6 +46,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
             (d) => d.Region
         );
     };
+    
 
     const createPivotTable = (aggregatedData) => {
         const pivotData = {};
@@ -153,57 +154,43 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .style("pointer-events", "none");
 
     const updateHeatmap = (pivotData, timeUnit, selectedRegions) => {
-       const xAxisLabel = timeUnit === "month" ? "Mois" : "Année";
+    // Ensure selectedRegions is always an array
+    selectedRegions = Array.from(selectedRegions || []);
 
-    // Update the text of the X-axis label
-      d3.select(".axis-label")
-      .text(xAxisLabel);
-        const times = Array.from(new Set(data.map((d) => timeUnit === "month" ? d.MonthFormatted : d.Year)));
-        x.domain(times);
-        xAxis
-            .call(
-                d3.axisBottom(x).tickValues(
-                    x.domain().filter(function (d, i) {
-                        return !(i % (timeUnit === "month" ? 3 : 1));
-                    })
-                )
-            )
-            .selectAll("text")
-            .attr("transform", "rotate(-45)")
-            .style("text-anchor", "end");
+    const xAxisLabel = timeUnit === "month" ? "Mois" : "Année";
+    d3.select(".axis-label").text(xAxisLabel);
+    
+    const times = Array.from(new Set(data.map((d) => timeUnit === "month" ? d.MonthFormatted : d.Year)));
+    x.domain(times);
+    xAxis.call(d3.axisBottom(x).tickValues(x.domain().filter((d, i) => !(i % (timeUnit === "month" ? 3 : 1)))));
+    svg.selectAll("rect").remove();
 
-        svg.selectAll("rect").remove();
-
-
-        selectedRegions.forEach((region) => {
-            x.domain().forEach((time) => {
-                svg
-                    .append("rect")
-                    .attr("x", x(time))
-                    .attr("y", y(region))
-                    .attr("width", x.bandwidth())
-                    .attr("height", y.bandwidth())
-                    .attr("rx", 4) // Rounded corners
-                    .attr("ry", 4) // Rounded corners
-                    .style("fill", color(pivotData[region][time] || 0))
-                    .style("stroke-width", 2)
-                    .style("stroke", "#e2e8f0")
-                    .style("opacity", 0.8)
-                    .on("mouseover", function (event, d) {
-                        tooltip.transition().duration(200).style("opacity", 0.9);
-                        tooltip
-                            .html(`Region: ${region}<br>${timeUnit.charAt(0).toUpperCase() + timeUnit.slice(1)}: ${time}<br>Requests: ${pivotData[region][time] }`)
-                            .style("left", (event.pageX + 10) + "px")
-                            .style("top", (event.pageY - 28) + "px");
-                    })
-                    .on("mouseout", function (d) {
-                        tooltip.transition().duration(500).style("opacity", 0);
-                    });
-            });
+    selectedRegions.forEach((region) => {
+        x.domain().forEach((time) => {
+            if (!pivotData[region] || !pivotData[region][time]) return; // Guard clause
+            svg.append("rect")
+                .attr("x", x(time))
+                .attr("y", y(region))
+                .attr("width", x.bandwidth())
+                .attr("height", y.bandwidth())
+                .attr("rx", 4)
+                .attr("ry", 4)
+                .style("fill", color(pivotData[region][time]))
+                .style("stroke-width", 2)
+                .style("stroke", "#e2e8f0")
+                .style("opacity", 0.8)
+                .on("mouseover", function (event, d) {
+                    tooltip.transition().duration(200).style("opacity", 0.9);
+                    tooltip.html(`Region: ${region}<br>${timeUnit.charAt(0).toUpperCase() + timeUnit.slice(1)}: ${time}<br>Requests: ${pivotData[region][time]}`)
+                        .style("left", `${event.pageX + 10}px`)
+                        .style("top", `${event.pageY - 28}px`);
+                })
+                .on("mouseout", function () {
+                    tooltip.transition().duration(500).style("opacity", 0);
+                });
         });
-        
-    };
-
+    });
+};
     updateHeatmap(pivotData, "month", regions);
    
 
