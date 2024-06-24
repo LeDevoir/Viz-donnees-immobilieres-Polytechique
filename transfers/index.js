@@ -56,7 +56,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     let aggregatedData = aggregateData(data, "month");
     let pivotData = createPivotTable(aggregatedData);
 
-    const margin = { top: 50, right: 150, bottom: 150, left: 200 };
+    const margin = { top: 50, right: 200, bottom: 150, left: 150 };
     const width = 800 - margin.left - margin.right;
     const height = 600 - margin.top - margin.bottom;
 
@@ -66,7 +66,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
-        .attr("transform", "translate(" + (margin.left+25) + "," + margin.top + ")");
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     const x = d3.scaleBand().range([0, width]).padding(0.05);
     const y = d3.scaleBand().range([height, 0]).padding(0.05);
@@ -183,8 +183,6 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         // Update the legend with the new color scale
         updateLegend(color, d3.max(Object.values(pivotData).flatMap((d) => Object.values(d))));
     };
-
-    updateHeatmap(pivotData, "month", regions);
 
     const zMax = d3.max(
         Object.values(pivotData).flatMap((d) => Object.values(d))
@@ -365,4 +363,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         const selectedRegions = Array.from(regionSelector.node().selectedOptions, option => option.value);
         updateHeatmap(pivotData, timeUnit, selectedRegions);
     });
+
+    // Initial heatmap
+    updateHeatmap(pivotData, "month", regions);
 });
