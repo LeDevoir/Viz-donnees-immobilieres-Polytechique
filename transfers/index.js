@@ -181,10 +181,6 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     updateHeatmap(pivotData, "month", regions);
     updateGradient(data);
 
-    let zMax = d3.max(
-        Object.values(pivotData).flatMap((d) => Object.values(d))    
-    );
-
     const colorSelector = d3
         .select("#colorSelector")
         .append("select")
