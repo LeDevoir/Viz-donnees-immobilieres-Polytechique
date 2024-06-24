@@ -102,24 +102,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .selectAll("text")
         .attr("transform", "rotate(-45)")
         .style("text-anchor", "end");
-    document.addEventListener("DOMContentLoaded", function() {
-    const initialTimeUnit = d3.select("#timeSelector").property("value");
-        // Initialize the SVG and its elements
-    const svg = d3.select("#heatmap").append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform", translate(${margin.left}, ${margin.top}));
-
-    // Add the X-axis label with the initial time unit
-    svg.append("text")
-        .attr("class", "axis-label text-xl font-semibold")
-        .attr("transform", translate(${width / 2}, ${height + margin.bottom - 20}))
-        .style("text-anchor", "middle")
-        .text(getAxisLabel(initialTimeUnit));  // Using the function to set the initial label
-
-    // Setup other parts of your D3 visualization here
-});
+   
     // Add Y Axis
     svg.append("g").attr("class", "y axis text-sm").call(d3.axisLeft(y));
     function getAxisLabel(timeUnit) {
