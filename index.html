@@ -17,36 +17,13 @@
     class="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]"
   >
     <div class="flex h-full flex-col gap-4 p-4 bg-neutral-400">
-      <button
-        class="p-2 font-bold btn btn-active"
-        onclick="loadVisualization('main')"
+      <a class="p-2 font-bold btn btn-neutral" href="/">Acceuil</a>
+      <a class="p-2 font-bold btn" href="/transfers">Transferts</a>
+      <a class="p-2 font-bold btn" href="/sales">Ventes</a>
+      <a class="p-2 font-bold btn" href="/difficulties"
+        >Difficultés financières</a
       >
-        Acceuil
-      </button>
-      <button
-        class="p-2 font-bold btn btn-active"
-        onclick="loadVisualization('heatmap')"
-      >
-        Transferts
-      </button>
-      <button
-        class="p-2 font-bold btn btn-active"
-        onclick="loadVisualization('sales')"
-      >
-        Ventes
-      </button>
-      <button
-        class="p-2 font-bold btn btn-active"
-        onclick="loadVisualization('visualization2')"
-      >
-        Difficultés financières
-      </button>
-      <button
-        class="p-2 font-bold btn btn-active"
-        onclick="loadVisualization('visualization3')"
-      >
-        Hypothèques
-      </button>
+      <a class="p-2 font-bold btn" href="/mortgages">Hypothèques</a>
     </div>
     <div class="flex-1 flex flex-col gap-2 p-4" id="content">
       <h1 class="text-lg font-bold">
@@ -68,6 +45,5 @@
         faillites et bien d'autres.
       </p>
     </div>
-    <script src="index.js"></script>
   </body>
 </html>

@@ -55,7 +55,7 @@ d3.csv("donn_transf_prop_reqst.csv").then((data) => {
   const height = 800 - margin.top - margin.bottom;
 
   const svg = d3
-    .select("#heatmap")
+    .select("#content")
     .append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
