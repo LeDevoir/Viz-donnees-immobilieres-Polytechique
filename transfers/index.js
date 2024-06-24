@@ -174,7 +174,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
 
         svg.selectAll("rect").remove();
 
-
+        
         selectedRegions.forEach((region) => {
             x.domain().forEach((time) => {
                 svg
@@ -185,7 +185,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
                     .attr("height", y.bandwidth())
                     .attr("rx", 4) // Rounded corners
                     .attr("ry", 4) // Rounded corners
-                    .style("fill", color(pivotData[region][time] || 0))
+                    .style("fill", color(pivotData[region][time] ))
                     .style("stroke-width", 2)
                     .style("stroke", "#e2e8f0")
                     .style("opacity", 0.8)
