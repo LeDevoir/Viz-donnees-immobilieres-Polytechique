@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Visualization Project</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@4.12.7/dist/full.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body
+    data-theme="light"
+    class="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]"
+  >
+    <div class="flex h-full flex-col gap-4 p-4 bg-neutral-400">
+      <a class="p-2 font-bold btn" href="/">Acceuil</a>
+      <a class="p-2 font-bold btn" href="/transfers">Transferts</a>
+      <a class="p-2 font-bold btn" href="/sales">Ventes</a>
+      <a class="p-2 font-bold btn" href="/difficulties"
+        >Difficultés financières</a
+      >
+      <a class="p-2 font-bold btn btn-neutral" href="/mortgages">Hypothèques</a>
+    </div>
+
+    <div
+      id="tooltip"
+      class="absolute pointer-events-none p-2 rounded-lg bg-white border"
+      style="visibility: hidden"
+    ></div>
+    <div
+      class="grid min-h-screen w-full md:grid-cols-[1fr_400px] lg:grid-cols-[1fr_400px]"
+    >
+      <div id="content"></div>
+      <div class="flex h-full flex-col gap-4 p-4 bg-neutral-400">
+        <div class="time_filter" id="time_filter">
+          <label class="text-white font-bold" for="start-year"
+            >Choisissez la période à couvrir</label
+          >
+          <div class="grid gap-1 grid-cols-[2fr_3fr_3fr] items-center">
+            <label for="start-year">Début</label>
+            <select class="select select-sm select-bordered" id="start-year">
+              <option value="2019">2019</option>
+              <!-- Plus d'options -->
+            </select>
+            <select class="select select-sm select-bordered" id="start-month">
+              <option value="January">Janvier</option>
+              <!-- Plus d'options -->
+            </select>
+            <label for="end-year">Fin</label>
+            <select class="select select-sm select-bordered" id="end-year">
+              <option value="2024">2024</option>
+              <!-- Plus d'options -->
+            </select>
+            <select class="select select-sm select-bordered" id="end-month">
+              <option value="June">Juin</option>
+              <!-- Plus d'options -->
+            </select>
+          </div>
+        </div>
+        <div>
+          <div>
+            <label class="text-white font-bold" for="region-select"
+              >Ajouter une Région Administrative</label
+            >
+            <select
+              class="select select-sm select-bordered w-full"
+              id="region-select"
+            >
+              <option value="" disabled selected>
+                Régions Administratives
+              </option>
+            </select>
+          </div>
+          <div class="selected-regions">
+            <!-- La liste des régions sélectionnées apparaîtra ici -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="index.js"></script>
+    <script src="preprocess.js"></script>
+    <script src="interaction.js"></script>
+    <script src="viz.js"></script>
+  </body>
+</html>
