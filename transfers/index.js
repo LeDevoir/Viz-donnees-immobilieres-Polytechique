@@ -104,13 +104,15 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
 
     // Add Y Axis
     svg.append("g").attr("class", "y axis text-sm").call(d3.axisLeft(y));
-
+    function getAxisLabel(timeUnit) {
+    return timeUnit === "month" ? "Mois" : "Année";
+}
     // Add X Axis Label
     svg.append("text")
         .attr("class", "axis-label text-xl font-semibold")
         .attr("transform", `translate(${width / 2}, ${height + margin.bottom - 20})`)
         .style("text-anchor", "middle")
-        .text("Mois");
+        .text(getAxisLabel(initialTimeUnit));
 
     // Add Y Axis Label
     svg.append("text")
@@ -131,8 +133,11 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .style("pointer-events", "none");
 
     const updateHeatmap = (pivotData, timeUnit, selectedRegions) => {
-        const xAxisLabel = (timeUnit === "month") ? "Mois" : "Année";
-        d3.select(".x-axis-label").text(xAxisLabel); 
+       const xAxisLabel = timeUnit === "month" ? "Mois" : "Année";
+
+    // Update the text of the X-axis label
+      d3.select(".axis-label")
+      .text(xAxisLabel);
         const times = Array.from(new Set(data.map((d) => timeUnit === "month" ? d.MonthFormatted : d.Year)));
         x.domain(times);
         xAxis
@@ -353,6 +358,8 @@ regionSelector.selectAll(null)
     // Update heatmap on region selection change
     regionSelector.on("change", function() {
         const selectedRegions = Array.from(this.selectedOptions, option => option.value);
+        const selectedTimeUnit = d3.select(this).property("value");
+        d3.select(".axis-label").text(getAxisLabel(selectedTimeUnit));
         updateHeatmap(pivotData, d3.select("#timeSelector").property("value"), selectedRegions);
         updateGradient(data); 
     });
