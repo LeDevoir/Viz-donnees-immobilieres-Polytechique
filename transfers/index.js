@@ -131,6 +131,8 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .style("pointer-events", "none");
 
     const updateHeatmap = (pivotData, timeUnit, selectedRegions) => {
+        const xAxisLabel = (timeUnit === "month") ? "Mois" : "Année";
+        d3.select(".x-axis-label").text(xAxisLabel); 
         const times = Array.from(new Set(data.map((d) => timeUnit === "month" ? d.MonthFormatted : d.Year)));
         x.domain(times);
         xAxis
