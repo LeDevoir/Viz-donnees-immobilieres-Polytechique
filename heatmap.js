@@ -50,9 +50,9 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     let aggregatedData = aggregateData(data, "month");
     let pivotData = createPivotTable(aggregatedData);
 
-    const margin = { top: 50, right: 150, bottom: 150, left: 200 };
-    const width = 1000 - margin.left - margin.right;
-    const height = 800 - margin.top - margin.bottom;
+    const margin = { top: 50, right: 100, bottom: 150, left: 200 };
+    const width = 800 - margin.left - margin.right;
+    const height = 600 - margin.top - margin.bottom;
 
     const svg = d3
         .select("#heatmap")
@@ -65,7 +65,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     const x = d3.scaleBand().range([0, width]).padding(0.01);
     const y = d3.scaleBand().range([height, 0]).padding(0.01);
 
-    let color = d3.scaleSequential(d3.interpolateViridis)
+    let color = d3.scaleSequential(d3.interpolatePlasma)
         .domain([0, d3.max(Object.values(pivotData).flatMap((d) => Object.values(d)))]);
 
     const times = Array.from(new Set(data.map((d) => d.MonthFormatted)));
@@ -77,7 +77,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     // Add X Axis
     const xAxis = svg
         .append("g")
-        .attr("class", "x axis")
+        .attr("class", "x axis text-sm")
         .attr("transform", "translate(0," + height + ")");
 
     xAxis
@@ -93,18 +93,18 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .style("text-anchor", "end");
 
     // Add Y Axis
-    svg.append("g").attr("class", "y axis").call(d3.axisLeft(y));
+    svg.append("g").attr("class", "y axis text-sm").call(d3.axisLeft(y));
 
     // Add X Axis Label
     svg.append("text")
-        .attr("class", "axis-label")
+        .attr("class", "axis-label text-xl font-semibold")
         .attr("transform", `translate(${width / 2}, ${height + margin.bottom - 20})`)
         .style("text-anchor", "middle")
         .text("Months");
 
     // Add Y Axis Label
     svg.append("text")
-        .attr("class", "axis-label")
+        .attr("class", "axis-label text-xl font-semibold")
         .attr("transform", "rotate(-90)")
         .attr("y", 0 - margin.left + 20)
         .attr("x", 0 - height / 2)
@@ -115,13 +115,9 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     const tooltip = d3
         .select("body")
         .append("div")
-        .attr("class", "tooltip")
+        .attr("class", "tooltip p-2 bg-white border rounded-md shadow-lg")
         .style("opacity", 0)
         .style("position", "absolute")
-        .style("background-color", "white")
-        .style("border", "1px solid black")
-        .style("padding", "5px")
-        .style("border-radius", "5px")
         .style("pointer-events", "none");
 
     const updateHeatmap = (pivotData, timeUnit, selectedRegions) => {
@@ -148,6 +144,10 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
 
         svg.selectAll("rect").remove();
 
+        if (selectedRegions.includes("all")) {
+            selectedRegions = regions;
+        }
+
         selectedRegions.forEach((region) => {
             x.domain().forEach((time) => {
                 svg
@@ -159,9 +159,10 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
                     .attr("rx", 4) // Rounded corners
                     .attr("ry", 4) // Rounded corners
                     .style("fill", color(pivotData[region][time] || 0))
-                    .style("stroke-width", 4)
-                    .style("stroke", "none")
+                    .style("stroke-width", 2)
+                    .style("stroke", "#e2e8f0")
                     .style("opacity", 0.8)
+                    .on("mouseover", function
                     .on("mouseover", function (event, d) {
                         tooltip.transition().duration(200).style("opacity", 0.9);
                         tooltip
@@ -185,12 +186,10 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     const colorSelector = d3
         .select("#colorSelector")
         .append("select")
-        .attr("class", "color-selector");
+        .attr("class", "p-2 border rounded-md");
 
     const colorOptions = [
-
         { name: "Plasma", scale: d3.interpolatePlasma },
-
     ];
 
     colorOptions.forEach((option) => {
@@ -215,7 +214,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         updateLegend(color);
     });
 
-    const legendWidth = 30,
+    const legendWidth = 40,
         legendHeight = height;
 
     const legendSvg = d3
@@ -266,7 +265,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
 
     legendSvg
         .append("g")
-        .attr("class", "axis")
+        .attr("class", "axis text-sm")
         .attr("transform", `translate(${legendWidth}, 0)`)
         .call(legendAxis);
 
@@ -275,7 +274,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .attr("x", legendWidth / 2)
         .attr("y", -10)
         .attr("text-anchor", "middle")
-        .attr("class", "text-sm text-gray-700")
+        .attr("class", "text-sm font-semibold text-gray-700")
         .text("Number of Requests");
 
     function updateLegend(color) {
@@ -301,6 +300,12 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .attr("value", (d) => d)
         .text((d) => d);
 
+    // Add the "All" option for region selection
+    regionSelector
+        .insert("option", ":first-child")
+        .attr("value", "all")
+        .text("All");
+
     // Update heatmap on region selection change
     regionSelector.on("change", function() {
         const selectedRegions = Array.from(this.selectedOptions, option => option.value);
@@ -312,6 +317,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         const timeUnit = this.value;
         aggregatedData = aggregateData(data, timeUnit);
         pivotData = createPivotTable(aggregatedData);
-        updateHeatmap(pivotData, timeUnit, Array.from(regionSelector.node().selectedOptions, option => option.value));
+        const selectedRegions = Array.from(regionSelector.node().selectedOptions, option => option.value);
+        updateHeatmap(pivotData, timeUnit, selectedRegions);
     });
 });
