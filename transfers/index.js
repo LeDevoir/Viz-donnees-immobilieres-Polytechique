@@ -212,9 +212,9 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         );
         color = d3
             .scaleSequential(selectedOption.scale)
-            .domain([0, zMax]);
-        svg.selectAll("rect").style("fill", function (
-        const region = d3.select(this).attr("y");
+                        .domain([0, zMax]);
+        svg.selectAll("rect").style("fill", function (d) {
+            const region = d3.select(this).attr("y");
             const time = d3.select(this).attr("x");
             return color(pivotData[region][time] || 0);
         });
@@ -268,7 +268,24 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .append("rect")
         .attr("width", legendWidth)
         .attr("height", legendHeight)
-        .style("fill", "url(#gradient)");
+        .style("fill", "url(#gradient)")
+        .on("mouseover", function(event) {
+            d3.select(this).style("stroke", "black").style("stroke-width", 2);
+            tooltip.transition().duration(200).style("opacity", 0.9);
+            tooltip
+                .html(`Hovering over the legend`)
+                .style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY - 28) + "px");
+        })
+        .on("mousemove", function(event) {
+            tooltip
+                .style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY - 28) + "px");
+        })
+        .on("mouseout", function() {
+            d3.select(this).style("stroke", "none");
+            tooltip.transition().duration(500).style("opacity", 0);
+        });
 
     legendSvg
         .append("g")
