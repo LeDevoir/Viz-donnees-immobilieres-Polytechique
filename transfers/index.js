@@ -173,6 +173,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
                     });
             });
         });
+        updateGradient(data);
     };
 
     updateHeatmap(pivotData, "month", regions);
@@ -233,27 +234,42 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .ticks(20)
         .tickFormat(d3.format(".0f"));
 
-    const legend = legendSvg
-        .append("defs")
-        .append("svg:linearGradient")
-        .attr("id", "gradient")
-        .attr("x1", "0%")
-        .attr("y1", "100%")
-        .attr("x2", "0%")
-        .attr("y2", "0%")
-        .attr("spreadMethod", "pad");
+    const colorScale = d3.scaleSequential(d3.interpolateViridis)
+    .domain(d3.extent(data, d => d.value));
+    
+    const gradient = legendSvg.select("defs")
+    .select("linearGradient")
+    .selectAll("stop")
+    .data([
+        {offset: "0%", color: colorScale(zMin), opacity: 0.2},
+        {offset: "50%", color: colorScale((zMin + zMax) / 2), opacity: 0.6},
+        {offset: "100%", color: colorScale(zMax), opacity: 1}
+    ])
+    .join("stop")
+    .attr("offset", d => d.offset)
+    .attr("stop-color", d => d.color)
+    .attr("stop-opacity", d => d.opacity);
+   const legendGradient = legendSvg.append("defs")
+    .append("svg:linearGradient")
+    .attr("id", "gradient")
+    .attr("x1", "0%")
+    .attr("y1", "100%")
+    .attr("x2", "0%")
+    .attr("y2", "0%")
+    .attr("spreadMethod", "pad");
 
-    legend
-        .append("stop")
-        .attr("offset", "0%")
-        .attr("stop-color", color(0))
-        .attr("stop-opacity", 1);
-
-    legend
-        .append("stop")
-        .attr("offset", "50%")
-        .attr("stop-color", color(zMax))
-        .attr("stop-opacity",0.6);
+legendGradient.selectAll("stop")
+    .data([
+        {offset: "0%", color: colorScale(0), opacity: 0.2},
+        {offset: "33%", color: colorScale(zMax * 0.33), opacity: 0.5},
+        {offset: "67%", color: colorScale(zMax * 0.67), opacity: 0.7},
+        {offset: "100%", color: colorScale(zMax), opacity: 1}
+    ])
+    .enter()
+    .append("stop")
+    .attr("offset", d => d.offset)
+    .attr("stop-color", d => d.color)
+    .attr("stop-opacity", d => d.opacity);
 
     legendSvg
         .append("rect")
@@ -287,6 +303,22 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
             .attr("offset", (d) => d.offset)
             .attr("stop-color", (d) => d.color);
     }
+    function updateGradient(data) {
+    // Mettre à jour le domaine de l'échelle de couleur
+    colorScale.domain(d3.extent(data, d => d.value));
+
+    // Mettre à jour les stops du gradient
+    gradient.selectAll("stop").data([
+        {offset: "0%", color: colorScale(zMin), opacity: 0.2},
+        {offset: "50%", color: colorScale((zMin + zMax) / 2), opacity: 0.6},
+        {offset: "100%", color: colorScale(zMax), opacity: 1}
+    ])
+    .join("stop")
+    .attr("offset", d => d.offset)
+    .attr("stop-color", d => d.color)
+    .attr("stop-opacity", d => d.opacity);
+}
+
 
     // Populate region selector with regions
     const regionSelector = d3.select("#regionSelector");
@@ -308,6 +340,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         return data.filter(d => {
             const date = new Date(d.DT_DEBUT_MOIS);
             return (!startDate || date >= startDate) && (!endDate || date <= endDate);
+            
         });
     };
 
