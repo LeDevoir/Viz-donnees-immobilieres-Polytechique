@@ -326,14 +326,15 @@ legendGradient.selectAll("stop")
         .data(regions)
         .enter()
         .append("option")
-        .attr("value", (d) => d);
+        .attr("value", (d) => d)
+         .text((d) => d);;
        
 
     // Add the "All" option for region selection
     
     regionSelector
         .insert("option", ":first-child")
-        .attr("value", "all").text('all');
+        .text('all');
 
     const filterDataByDate = (data, startDate, endDate) => {
         return data.filter(d => {
