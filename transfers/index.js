@@ -61,8 +61,8 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     let aggregatedData = aggregateData(data, "month");
     let pivotData = createPivotTable(aggregatedData);
 
-    const margin = { top: 50, right: 100, bottom: 150, left: 200 };
-    const width = 800 - margin.left - margin.right;
+    const margin = { top: 50, right: 100, bottom: 150, left: 145 };
+    const width = 940 - margin.left - margin.right;
     const height = 600 - margin.top - margin.bottom;
     const transMarginLeft=margin.left+100;
     const svg = d3
@@ -176,7 +176,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
                    .on("mouseover", function (event, d) {
                         tooltip.transition().duration(200).style("opacity", 0.9);
                         tooltip
-                            .html(`Region: ${Région}<br>Année: ${time}<br>Requete: ${pivotData[region][time] }`)
+                            .html(`Région: ${region}<br>Année: ${time}<br>Requete: ${pivotData[region][time] }`)
                             .style("left", (event.pageX + 10) + "px")
                             .style("top", (event.pageY - 28) + "px");
                     })
