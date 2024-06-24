@@ -203,7 +203,7 @@ function build(data) {
       .attr("text-anchor", "middle")
       .attr("font-size", "16px")
       .attr("fill", "gray")
-      .text("Sorry, no data available for the selected timeframe or regions");
+      .text("Désolé, aucune donnée disponible pour la période ou les régions sélectionnées.");
     return;
   }
 
