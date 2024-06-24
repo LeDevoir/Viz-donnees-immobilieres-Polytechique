@@ -399,11 +399,9 @@ regionSelector.selectAll("Tout")
         alert("The start date must not be later than the end date.");
         return;
     }
-
     let filteredData = filterDataByDate(d3.select("#startDate").property("value"), d3.select("#endDate").property("value"));
-    const timeUnit = d3.select("#timeSelector").property("value");
-    const aggregatedData = aggregateData(filteredData, timeUnit);   
-    updateHeatmap(aggregatedData, timeUnit);
+    let aggregatedData = aggregateData(filteredData, "month");
+    updateHeatmap(aggregatedData, "month");
     updateGradient(data); 
     });
 });
