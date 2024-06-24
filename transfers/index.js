@@ -159,16 +159,15 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
 
     const xAxisLabel = timeUnit === "month" ? "Mois" : "Année";
     d3.select(".axis-label").text(xAxisLabel);
-    svg.selectAll("rect").remove();
-
-    if (selectedRegions.includes("all")) {
-            selectedRegions = regions;
-        }
     const times = Array.from(new Set(data.map((d) => timeUnit === "month" ? d.MonthFormatted : d.Year)));
     x.domain(times);
     xAxis.call(d3.axisBottom(x).tickValues(x.domain().filter((d, i) => !(i % (timeUnit === "month" ? 3 : 1)))));
     svg.selectAll("rect").remove();
+    
 
+    if (selectedRegions.includes("all")) {
+            selectedRegions = regions;
+        }
     selectedRegions.forEach((region) => {
         x.domain().forEach((time) => {
             if (!pivotData[region] || !pivotData[region][time]) return; // Guard clause
