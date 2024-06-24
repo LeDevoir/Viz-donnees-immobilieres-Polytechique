@@ -34,7 +34,9 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .domain([0, zMax]);
     d3.select("#startDate").attr("min", d3.timeFormat("%Y-%m-%d")(minDate)).attr("max", d3.timeFormat("%Y-%m-%d")(maxDate));
     d3.select("#endDate").attr("min", d3.timeFormat("%Y-%m-%d")(minDate)).attr("max", d3.timeFormat("%Y-%m-%d")(maxDate));
-
+    
+    const regionSelector = d3.select("#regionSelector");
+    regionSelector.selectAll("option").remove(); 
     const aggregateData = (data, timeUnit) => {
         return d3.rollups(
             data,
@@ -320,21 +322,23 @@ legendGradient.selectAll("stop")
     }
 
     
-    const regionSelector = d3.select("#regionSelector");
-    regionSelector
-        .selectAll("option")
+  regionSelector
+        .append("option")
+        .attr("value", "all")
+        .text("All");
+    const regions = Object.keys(pivotData);
+
+regionSelector.selectAll(null)
         .data(regions)
         .enter()
         .append("option")
-        .attr("value", (d) => d)
-         .text((d) => d);;
+        .attr("value", d => d)
+        .text(d => d);
        
 
     // Add the "All" option for region selection
     
-    regionSelector
-        .insert("option", ":first-child")
-        .text('all');
+
 
     const filterDataByDate = (data, startDate, endDate) => {
         return data.filter(d => {
