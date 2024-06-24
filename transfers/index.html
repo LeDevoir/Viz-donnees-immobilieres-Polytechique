@@ -25,7 +25,7 @@
     </div>
 
     <div class="flex flex-col flex-1 p-4 bg-gray-100">
-      <div class="controls mb-4 flex items-center">
+      <div class="controls mb-4 flex items-center justify-center">
         <label for="timeSelector" class="mr-2">Select Time Period:</label>
         <select id="timeSelector" class="p-2 border rounded-md">
           <option value="month">Monthly</option>
@@ -41,12 +41,14 @@
         <input type="date" id="endDate" class="p-2 border rounded-md">
         <button id="applyFilters" class="ml-4 p-2 border rounded-md bg-blue-500 text-white">Apply</button>
       </div>
-      <div class="flex flex-row">
-        <div id="heatmap" class="flex-1 bg-white shadow rounded p-4"></div>
-        <div id="legend" class="ml-4"></div>
+      <div class="flex justify-center">
+        <div id="heatmap" class="bg-white shadow rounded p-4"></div>
+      </div>
+      <div class="flex justify-center mt-4">
+        <div id="legend"></div>
       </div>
     </div>
 
-    <script src="index.js"></script>
+    <script src="heatmap.js"></script>
   </body>
 </html>
