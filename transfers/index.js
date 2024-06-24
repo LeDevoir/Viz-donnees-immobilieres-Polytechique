@@ -365,12 +365,11 @@ regionSelector.selectAll("Tout")
     
 
 
-    const filterDataByDate = (data, startDate, endDate) => {
-        return data.filter(d => {
-            const date = new Date(d.DT_DEBUT_MOIS);
-            return (!startDate || date >= startDate) && (!endDate || date <= endDate);
-            
-        });
+    const filterDataByDate = (startDate, endDate) => {
+    return data.filter(d => {
+        const date = d.Month; // Ensure `d.Month` is parsed and stored when loading data
+        return (!startDate || date >= new Date(startDate)) && (!endDate || date <= new Date(endDate));
+    });
     };
 
     // Update heatmap on region selection change
@@ -392,15 +391,19 @@ regionSelector.selectAll("Tout")
         updateGradient(data); 
     });
 
-    d3.select("#applyFilters").on("click", function () {
-        const startDate = new Date(d3.select("#startDate").property("value"));
-        const endDate = new Date(d3.select("#endDate").property("value"));
-        const filteredData = filterDataByDate(data, startDate, endDate);
-        const timeUnit = d3.select("#timeSelector").property("value");
-        aggregatedData = aggregateData(filteredData, timeUnit);
-        pivotData = createPivotTable(aggregatedData);
-        const selectedRegions = Array.from(regionSelector.node().selectedOptions, option => option.value);
-        updateHeatmap(pivotData, timeUnit, selectedRegions);
-        updateGradient(data); 
+   d3.select("#applyFilters").on("click", function() {
+    const startDate = d3.select("#startDate").property("value");
+    const endDate = d3.select("#endDate").property("value");
+
+    if (new Date(startDate) > new Date(endDate)) {
+        alert("The start date must not be later than the end date.");
+        return;
+    }
+
+    let filteredData = filterDataByDate(d3.select("#startDate").property("value"), d3.select("#endDate").property("value"));
+    const timeUnit = d3.select("#timeSelector").property("value");
+    const aggregatedData = aggregateData(filteredData, timeUnit);   
+    updateHeatmap(aggregatedData, timeUnit);
+    updateGradient(data); 
     });
 });
