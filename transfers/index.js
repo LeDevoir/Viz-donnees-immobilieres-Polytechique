@@ -168,7 +168,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
                     .on("mouseover", function (event, d) {
                         tooltip.transition().duration(200).style("opacity", 0.9);
                         tooltip
-                            .html(`Region: ${region}<br>${timeUnit.charAt(0).toUpperCase() + timeUnit.slice(1)}: ${time}<br>Requests: ${pivotData[region][time] || 0}`)
+                            .html(`Region: ${region}<br>${timeUnit.charAt(0).toUpperCase() + timeUnit.slice(1)}: ${time}<br>Requests: ${pivotData[region][time] }`)
                             .style("left", (event.pageX + 10) + "px")
                             .style("top", (event.pageY - 28) + "px");
                     })
