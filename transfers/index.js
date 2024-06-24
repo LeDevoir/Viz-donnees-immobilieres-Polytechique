@@ -145,7 +145,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
 
         svg.selectAll("rect").remove();
 
-        if (selectedRegions.includes("all")) {
+        if (selectedRegions.includes("Tout")) {
             selectedRegions = regions;
         }
 
