@@ -47,7 +47,7 @@ d3.csv("donn_prix_vente_reqst.csv", (d) => ({
     );
 
     const margin = { top: 20, right: 30, bottom: 40, left: 150 };
-    const width = 1200;
+    const width = 1200 - margin.left - margin.right;
     const height = 500 - margin.top - margin.bottom;
     const svg = d3
       .select("#content")
