@@ -326,7 +326,7 @@ legendGradient.selectAll("stop")
         .data(regions)
         .enter()
         .append("option")
-        .attr("value", (d) => d)
+        .attr("value", (d) => d);
        
 
     // Add the "All" option for region selection
