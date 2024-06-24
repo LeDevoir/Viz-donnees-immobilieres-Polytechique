@@ -326,7 +326,7 @@ legendGradient.selectAll("stop")
         .append("option")
         .attr("value", "all")
         .text("All");
-    const regions = Object.keys(pivotData);
+   
 
 regionSelector.selectAll(null)
         .data(regions)
