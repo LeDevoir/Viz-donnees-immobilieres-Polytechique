@@ -213,7 +213,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     });
 
     const legendWidth = 40,
-        legendHeight = height;
+        legendHeight = height+100;
 
     const legendSvg = d3
         .select("#legend")
@@ -233,47 +233,28 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .ticks(20)
         .tickFormat(d3.format(".0f"));
 
-    const legend = legendSvg
-        .append("defs")
-        .append("svg:linearGradient")
-        .attr("id", "gradient")
-        .attr("x1", "0%")
-        .attr("y1", "100%")
-        .attr("x2", "0%")
-        .attr("y2", "0%")
-        .attr("spreadMethod", "pad");
+   const gradient = legendSvg.append("defs")
+    .append("radialGradient")
+    .attr("id", "gradientRadial")
+    .attr("cx", "50%")
+    .attr("cy", "50%")
+    .attr("r", "50%");
 
-    legend
-        .append("stop")
-        .attr("offset", "0%")
-        .attr("stop-color", color(0))
-        .attr("stop-opacity", 1);
+gradient.append("stop")
+    .attr("offset", "0%")
+    .attr("stop-color", color(0))
+    .attr("stop-opacity", 0.2);
 
-    legend
-        .append("stop")
-        .attr("offset", "100%")
-        .attr("stop-color", color(zMax))
-        .attr("stop-opacity", 1);
+gradient.append("stop")
+    .attr("offset", "100%")
+    .attr("stop-color", color(zMax))
+    .attr("stop-opacity", 1);
 
-    legendSvg
-        .append("rect")
-        .attr("width", legendWidth)
-        .attr("height", legendHeight)
-        .style("fill", "url(#gradient)");
+legendSvg.append("rect")
+    .attr("width", legendWidth)
+    .attr("height", legendHeight)
+    .style("fill", "url(#gradientRadial)");
 
-    legendSvg
-        .append("g")
-        .attr("class", "axis text-sm")
-        .attr("transform", `translate(${legendWidth}, 0)`)
-        .call(legendAxis);
-
-    legendSvg
-        .append("text")
-        .attr("x", legendWidth / 2)
-        .attr("y", -10)
-        .attr("text-anchor", "middle")
-        .attr("class", "text-sm font-semibold text-gray-700")
-        .text("Requests");
 
     function updateLegend(color) {
         const legendGradient = legendSvg.select("defs linearGradient");
