@@ -18,32 +18,30 @@
   >
     <div class="flex h-full flex-col gap-4 p-4 bg-neutral-400">
       <a class="p-2 font-bold btn" href="/">Acceuil</a>
-      <a class="p-2 font-bold btn btn-neutral" href="/transfers">Transferts</a>
-      <a class="p-2 font-bold btn" href="/sales">Ventes</a>
-      <a class="p-2 font-bold btn" href="/difficulties"
-        >Difficultés financières</a
-      >
+      <a class="p-2 font-bold btn" href="/transfers">Transferts</a>
+      <a class="p-2 font-bold btn btn-neutral" href="/sales">Ventes</a>
+      <a class="p-2 font-bold btn" href="/difficulties">Difficultés financières</a>
       <a class="p-2 font-bold btn" href="/mortgages">Hypothèques</a>
     </div>
 
-    <div class="flex flex-row">
-      <div class="flex-1" id="content">
-        <div class="controls mb-4">
-                    <label for="timeSelector" class="mr-2">Select Time Period:</label>
-                    <select id="timeSelector">
-                        <option value="month">Monthly</option>
-                        <option value="year">Yearly</option>
-                    </select>
-                    <label for="regionSelector" class="ml-4 mr-2">Select Regions:</label>
-                    <select id="regionSelector" multiple></select>
-                </div>
-                <div class="flex flex-row">
-                    <div id="heatmap" class="flex-1"></div>
-                    <div id="legend" class="ml-4"></div>
-                </div>
+    <div class="flex flex-col flex-1 p-4 bg-gray-100">
+      <div class="controls mb-4 flex items-center">
+        <label for="timeSelector" class="mr-2">Select Time Period:</label>
+        <select id="timeSelector" class="p-2 border rounded-md">
+          <option value="month">Monthly</option>
+          <option value="year">Yearly</option>
+        </select>
+        <label for="regionSelector" class="ml-4 mr-2">Select Regions:</label>
+        <select id="regionSelector" multiple class="p-2 border rounded-md">
+          <option value="all">All</option>
+        </select>
+      </div>
+      <div class="flex flex-row">
+        <div id="heatmap" class="flex-1 bg-white shadow rounded p-4"></div>
+        <div id="legend" class="ml-4"></div>
       </div>
     </div>
 
-    <script src="index.js"></script>
+    <script src="heatmap.js"></script>
   </body>
 </html>
