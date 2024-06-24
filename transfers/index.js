@@ -29,7 +29,9 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
 
     const minDate = d3.min(data, d => d.Month);
     const maxDate = d3.max(data, d => d.Month);
-
+    let zMax = d3.max(data, d => d.NB_REQST); 
+    let colorScale = d3.scaleSequential(d3.interpolateViridis)
+        .domain([0, zMax]);
     d3.select("#startDate").attr("min", d3.timeFormat("%Y-%m-%d")(minDate)).attr("max", d3.timeFormat("%Y-%m-%d")(maxDate));
     d3.select("#endDate").attr("min", d3.timeFormat("%Y-%m-%d")(minDate)).attr("max", d3.timeFormat("%Y-%m-%d")(maxDate));
 
@@ -303,24 +305,27 @@ legendGradient.selectAll("stop")
             .attr("offset", (d) => d.offset)
             .attr("stop-color", (d) => d.color);
     }
-    function updateGradient(data) {
-    // Mettre à jour le domaine de l'échelle de couleur
-    colorScale.domain(d3.extent(data, d => d.value));
+        function updateGradient(data) {
+       
+        let zMax = d3.max(data, d => d.NB_REQST); 
+        colorScale.domain([0, zMax]); 
 
-    // Mettre à jour les stops du gradient
-    gradient.selectAll("stop").data([
-        {offset: "0%", color: colorScale(zMin), opacity: 0.2},
-        {offset: "50%", color: colorScale((zMin + zMax) / 2), opacity: 0.6},
-        {offset: "100%", color: colorScale(zMax), opacity: 1}
-    ])
-    .join("stop")
-    .attr("offset", d => d.offset)
-    .attr("stop-color", d => d.color)
-    .attr("stop-opacity", d => d.opacity);
-}
+        
+        const gradient = legendSvg.select("defs")
+            .select("linearGradient")
+            .selectAll("stop")
+            .data([
+                {offset: "0%", color: colorScale(0), opacity: 0.2},
+                {offset: "50%", color: colorScale(zMax * 0.5), opacity: 0.6},
+                {offset: "100%", color: colorScale(zMax), opacity: 1}
+            ])
+            .join("stop")
+            .attr("offset", d => d.offset)
+            .attr("stop-color", d => d.color)
+            .attr("stop-opacity", d => d.opacity);
+    }
 
-
-    // Populate region selector with regions
+    
     const regionSelector = d3.select("#regionSelector");
     regionSelector
         .selectAll("option")
@@ -348,6 +353,7 @@ legendGradient.selectAll("stop")
     regionSelector.on("change", function() {
         const selectedRegions = Array.from(this.selectedOptions, option => option.value);
         updateHeatmap(pivotData, d3.select("#timeSelector").property("value"), selectedRegions);
+        updateGradient(data); 
     });
 
     // Update heatmap on time period selection change
@@ -357,6 +363,7 @@ legendGradient.selectAll("stop")
         pivotData = createPivotTable(aggregatedData);
         const selectedRegions = Array.from(regionSelector.node().selectedOptions, option => option.value);
         updateHeatmap(pivotData, timeUnit, selectedRegions);
+        updateGradient(data); 
     });
 
     d3.select("#applyFilters").on("click", function () {
@@ -368,5 +375,6 @@ legendGradient.selectAll("stop")
         pivotData = createPivotTable(aggregatedData);
         const selectedRegions = Array.from(regionSelector.node().selectedOptions, option => option.value);
         updateHeatmap(pivotData, timeUnit, selectedRegions);
+        updateGradient(data); 
     });
 });
