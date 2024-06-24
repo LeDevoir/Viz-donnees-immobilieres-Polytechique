@@ -149,6 +149,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         }
 
         selectedRegions.forEach((region) => {
+            x.domain().
             x.domain().forEach((time) => {
                 svg
                     .append("rect")
@@ -161,7 +162,6 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
                     .style("fill", color(pivotData[region][time] || 0))
                     .style("stroke-width", 2)
                     .style("stroke", "#e2e8f0")
-                   
                     .style("opacity", 0.8)
                     .on("mouseover", function (event, d) {
                         tooltip.transition().duration(200).style("opacity", 0.9);
@@ -306,6 +306,13 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .attr("value", "all")
         .text("All");
 
+    const filterDataByDate = (data, startDate, endDate) => {
+        return data.filter(d => {
+            const date = new Date(d.DT_DEBUT_MOIS);
+            return (!startDate || date >= startDate) && (!endDate || date <= endDate);
+        });
+    };
+
     // Update heatmap on region selection change
     regionSelector.on("change", function() {
         const selectedRegions = Array.from(this.selectedOptions, option => option.value);
@@ -319,5 +326,15 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         pivotData = createPivotTable(aggregatedData);
         const selectedRegions = Array.from(regionSelector.node().selectedOptions, option => option.value);
         updateHeatmap(pivotData, timeUnit, selectedRegions);
+    });
+
+    d3.select("#applyFilters").on("click", function () {
+        const startDate = new Date(d3.select("#startDate").property("value"));
+        const endDate = new Date(d3.select("#endDate").property("value"));
+        const filteredData = filterDataByDate(data, startDate, endDate);
+        aggregatedData = aggregateData(filteredData, d3.select("#timeSelector").property("value"));
+        pivotData = createPivotTable(aggregatedData);
+        const selectedRegions = Array.from(regionSelector.node().selectedOptions, option => option.value);
+        updateHeatmap(pivotData, d3.select("#timeSelector").property("value"), selectedRegions);
     });
 });
