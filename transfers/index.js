@@ -115,15 +115,14 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     .attr("y", height + 88) // Adjust this value as needed
     .text(getAxisLabel(initialTimeUnit));
 
-    // Add Y Axis Label
+    // Add y-axis label
     svg.append("text")
-        .attr("class", "axis-label text-xl font-semibold")
-        .attr("transform", "rotate(-90)")
-        .attr("y", 0 - margin.left -30)
-        .attr("x", 0 - height / 2)
-        .attr("dy", "1em")
-        .style("text-anchor", "middle")
-        .text("Régions");
+    .attr("class", "axis-label text-xl font-semibold")
+    .attr("text-anchor", "middle")
+    .attr("transform", "rotate(-90)")
+    .attr("x", -height / 2)
+    .attr("y", -220) // Adjust this value as needed
+    .text("Régions");
 
     const tooltip = d3
         .select("body")
