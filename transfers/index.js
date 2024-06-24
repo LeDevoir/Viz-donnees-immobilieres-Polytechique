@@ -179,7 +179,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     };
 
     updateHeatmap(pivotData, "month", regions);
-    updateGradient(data);
+   
 
     const colorSelector = d3
         .select("#colorSelector")
