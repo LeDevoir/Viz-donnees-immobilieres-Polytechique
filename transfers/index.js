@@ -56,7 +56,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     let aggregatedData = aggregateData(data, "month");
     let pivotData = createPivotTable(aggregatedData);
 
-    const margin = { top: 50, right: 50, bottom: 100, left: 100 };
+    const margin = { top: 50, right: 150, bottom: 100, left: 150 };
     const width = 800 - margin.left - margin.right;
     const height = 600 - margin.top - margin.bottom;
 
@@ -102,14 +102,14 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     svg.append("g").attr("class", "y axis text-sm").call(d3.axisLeft(y));
 
     // Add X Axis Label
-    svg.append("text")
+    const xAxisLabel = svg.append("text")
         .attr("class", "axis-label text-xl font-semibold")
         .attr("transform", `translate(${width / 2}, ${height + margin.bottom - 30})`)
         .style("text-anchor", "middle")
         .text("Months");
 
     // Add Y Axis Label
-    svg.append("text")
+    const yAxisLabel = svg.append("text")
         .attr("class", "axis-label text-xl font-semibold")
         .attr("transform", "rotate(-90)")
         .attr("y", -margin.left + 20)
@@ -127,12 +127,12 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .style("pointer-events", "none");
 
     const updateHeatmap = (pivotData, timeUnit, selectedRegions) => {
-        const times = Array.from(new Set(data.map((d) => timeUnit === "month" ? d.MonthFormatted : d.Year)));
+                const times = Array.from(new Set(data.map((d) => timeUnit === "month" ? d.MonthFormatted : d.Year)));
         x.domain(times);
         xAxis
             .call(
                 d3.axisBottom(x).tickValues(
-                                        x.domain().filter(function (d, i) {
+                    x.domain().filter(function (d, i) {
                         return !(i % (timeUnit === "month" ? 3 : 1));
                     })
                 )
@@ -173,6 +173,9 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
                     });
             });
         });
+
+        // Update X Axis Label
+        xAxisLabel.text(timeUnit === "month" ? "Months" : "Years");
     };
 
     updateHeatmap(pivotData, "month", regions);
@@ -221,7 +224,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .attr("width", legendWidth + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
-        .attr("transform", `translate(10, ${margin.top})`);
+        .attr("transform", `translate(${margin.right - 50}, ${margin.top})`);
 
     const legendScale = d3
         .scaleLinear()
@@ -338,3 +341,4 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     });
 });
 
+       
