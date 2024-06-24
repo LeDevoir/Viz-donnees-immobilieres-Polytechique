@@ -213,9 +213,27 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     });
 
     const legendWidth = 40,
-        legendHeight = height+100;
+        legendHeight = height;
 
-   const legend = legendSvg
+    const legendSvg = d3
+        .select("#legend")
+        .append("svg")
+                .attr("width", legendWidth + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(10, ${margin.top})`);
+
+    const legendScale = d3
+        .scaleLinear()
+        .domain([0, zMax])
+        .range([legendHeight, 0]);
+
+    const legendAxis = d3
+        .axisRight(legendScale)
+        .ticks(20)
+        .tickFormat(d3.format(".0f"));
+
+    const legend = legendSvg
         .append("defs")
         .append("svg:linearGradient")
         .attr("id", "gradient")
@@ -227,15 +245,15 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
 
     legend
         .append("stop")
-        .attr("offset", "50%")
+        .attr("offset", "0%")
         .attr("stop-color", color(0))
-        .attr("stop-opacity", 0.2);
+        .attr("stop-opacity", 1);
 
     legend
         .append("stop")
-        .attr("offset", "100%")
-        .attr("stop-color", color(zMax))
-        .attr("stop-opacity", 0.5);
+        .attr("offset", "50%")
+        .attr("stop-color", color(zMid))
+        .attr("stop-opacity",0.6);
 
     legendSvg
         .append("rect")
@@ -246,7 +264,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     legendSvg
         .append("g")
         .attr("class", "axis text-sm")
-        .attr("transform", translate(${legendWidth}, 0))
+        .attr("transform", `translate(${legendWidth}, 0)`)
         .call(legendAxis);
 
     legendSvg
@@ -256,7 +274,6 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .attr("text-anchor", "middle")
         .attr("class", "text-sm font-semibold text-gray-700")
         .text("Requests");
-
 
     function updateLegend(color) {
         const legendGradient = legendSvg.select("defs linearGradient");
