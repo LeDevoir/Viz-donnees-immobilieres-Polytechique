@@ -108,10 +108,11 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
 }
     // Add X Axis Label
     svg.append("text")
-        .attr("class", "axis-label text-xl font-semibold")
-        .attr("transform", translate(${width / 2}, ${height + margin.bottom - 20}))
-        .style("text-anchor", "middle")
-        .text(getAxisLabel(initialTimeUnit));
+    .attr("class", "axis-label text-xl font-semibold")
+    .attr("text-anchor", "middle")
+    .attr("x", width / 2)
+    .attr("y", height + 88) // Adjust this value as needed
+    .text(getAxisLabel(initialTimeUnit));
 
     // Add Y Axis Label
     svg.append("text")
