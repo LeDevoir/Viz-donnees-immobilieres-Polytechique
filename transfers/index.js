@@ -56,7 +56,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     let aggregatedData = aggregateData(data, "month");
     let pivotData = createPivotTable(aggregatedData);
 
-    const margin = { top: 50, right: 150, bottom: 150, left: 200 };
+    const margin = { top: 50, right: 200, bottom: 150, left: 150 };
     const width = 800 - margin.left - margin.right;
     const height = 600 - margin.top - margin.bottom;
 
@@ -230,7 +230,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .attr("width", legendWidth + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
-        .attr("transform", `translate(${margin.right - 50}, ${margin.top})`);
+        .attr("transform", `translate(10, ${margin.top})`);
 
     const legendScale = d3
         .scaleLinear()
