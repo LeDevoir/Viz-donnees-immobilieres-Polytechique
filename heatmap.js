@@ -50,8 +50,8 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     let aggregatedData = aggregateData(data, "month");
     let pivotData = createPivotTable(aggregatedData);
 
-    const margin = { top: 100, right: 50, bottom: 150, left: 200 };
-    const width = 1200 - margin.left - margin.right;
+    const margin = { top: 50, right: 150, bottom: 150, left: 200 };
+    const width = 1000 - margin.left - margin.right;
     const height = 800 - margin.top - margin.bottom;
 
     const svg = d3
@@ -65,12 +65,8 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     const x = d3.scaleBand().range([0, width]).padding(0.01);
     const y = d3.scaleBand().range([height, 0]).padding(0.01);
 
-    let color = d3
-        .scaleSequential(d3.interpolateViridis)
-        .domain([
-            0,
-            d3.max(Object.values(pivotData).flatMap((d) => Object.values(d))),
-        ]);
+    let color = d3.scaleSequential(d3.interpolateViridis)
+        .domain([0, d3.max(Object.values(pivotData).flatMap((d) => Object.values(d)))]);
 
     const times = Array.from(new Set(data.map((d) => d.MonthFormatted)));
     const regions = Object.keys(pivotData);
@@ -78,6 +74,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     x.domain(times);
     y.domain(regions);
 
+    // Add X Axis
     const xAxis = svg
         .append("g")
         .attr("class", "x axis")
@@ -95,7 +92,25 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .attr("transform", "rotate(-45)")
         .style("text-anchor", "end");
 
+    // Add Y Axis
     svg.append("g").attr("class", "y axis").call(d3.axisLeft(y));
+
+    // Add X Axis Label
+    svg.append("text")
+        .attr("class", "axis-label")
+        .attr("transform", `translate(${width / 2}, ${height + margin.bottom - 20})`)
+        .style("text-anchor", "middle")
+        .text("Months");
+
+    // Add Y Axis Label
+    svg.append("text")
+        .attr("class", "axis-label")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left + 20)
+        .attr("x", 0 - height / 2)
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Regions");
 
     const tooltip = d3
         .select("body")
@@ -109,7 +124,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .style("border-radius", "5px")
         .style("pointer-events", "none");
 
-    const updateHeatmap = (pivotData, timeUnit) => {
+    const updateHeatmap = (pivotData, timeUnit, selectedRegions) => {
         x.domain(
             Array.from(
                 new Set(
@@ -133,7 +148,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
 
         svg.selectAll("rect").remove();
 
-        regions.forEach((region) => {
+        selectedRegions.forEach((region) => {
             x.domain().forEach((time) => {
                 svg
                     .append("rect")
@@ -141,7 +156,12 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
                     .attr("y", y(region))
                     .attr("width", x.bandwidth())
                     .attr("height", y.bandwidth())
+                    .attr("rx", 4) // Rounded corners
+                    .attr("ry", 4) // Rounded corners
                     .style("fill", color(pivotData[region][time] || 0))
+                    .style("stroke-width", 4)
+                    .style("stroke", "none")
+                    .style("opacity", 0.8)
                     .on("mouseover", function (event, d) {
                         tooltip.transition().duration(200).style("opacity", 0.9);
                         tooltip
@@ -156,7 +176,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         });
     };
 
-    updateHeatmap(pivotData, "month");
+    updateHeatmap(pivotData, "month", regions);
 
     const zMax = d3.max(
         Object.values(pivotData).flatMap((d) => Object.values(d))
@@ -168,11 +188,9 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .attr("class", "color-selector");
 
     const colorOptions = [
-        { name: "Viridis", scale: d3.interpolateViridis },
-        { name: "Inferno", scale: d3.interpolateInferno },
-        { name: "Magma", scale: d3.interpolateMagma },
+
         { name: "Plasma", scale: d3.interpolatePlasma },
-        { name: "Cividis", scale: d3.interpolateCividis },
+
     ];
 
     colorOptions.forEach((option) => {
@@ -197,25 +215,25 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         updateLegend(color);
     });
 
-    const legendWidth = 300,
-        legendHeight = 50;
+    const legendWidth = 30,
+        legendHeight = height;
 
     const legendSvg = d3
         .select("#legend")
         .append("svg")
-        .attr("width", legendWidth + margin.left + margin.right)
-        .attr("height", legendHeight + 40)
+        .attr("width", legendWidth + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
         .append("g")
-        .attr("transform", `translate(${margin.left}, 20)`);
+        .attr("transform", `translate(10, ${margin.top})`);
 
     const legendScale = d3
         .scaleLinear()
         .domain([0, zMax])
-        .range([0, legendWidth]);
+        .range([legendHeight, 0]);
 
     const legendAxis = d3
-        .axisBottom(legendScale)
-        .ticks(5)
+        .axisRight(legendScale)
+        .ticks(10)
         .tickFormat(d3.format(".0f"));
 
     const legend = legendSvg
@@ -223,8 +241,8 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .append("svg:linearGradient")
         .attr("id", "gradient")
         .attr("x1", "0%")
-        .attr("y1", "0%")
-        .attr("x2", "100%")
+        .attr("y1", "100%")
+        .attr("x2", "0%")
         .attr("y2", "0%")
         .attr("spreadMethod", "pad");
 
@@ -249,13 +267,13 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     legendSvg
         .append("g")
         .attr("class", "axis")
-        .attr("transform", `translate(0, ${legendHeight})`)
+        .attr("transform", `translate(${legendWidth}, 0)`)
         .call(legendAxis);
 
     legendSvg
         .append("text")
         .attr("x", legendWidth / 2)
-        .attr("y", legendHeight + 30)
+        .attr("y", -10)
         .attr("text-anchor", "middle")
         .attr("class", "text-sm text-gray-700")
         .text("Number of Requests");
@@ -271,65 +289,29 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
             .join("stop")
             .attr("offset", (d) => d.offset)
             .attr("stop-color", (d) => d.color);
-
-        explanatoryLegend
-            .selectAll("rect")
-            .data([0, zMax / 2, zMax])
-            .style("fill", (d) => color(d));
     }
 
-    const explanatoryLegend = d3
-        .select("#heatmap")
-        .append("svg")
-        .attr("width", legendWidth + margin.left + margin.right)
-        .attr("height", 50)
-        .append("g")
-        .attr("class", "legend")
-        .attr("transform", `translate(${margin.left}, 60)`);
+    // Populate region selector with regions
+    const regionSelector = d3.select("#regionSelector");
+    regionSelector
+        .selectAll("option")
+        .data(regions)
+        .enter()
+        .append("option")
+        .attr("value", (d) => d)
+        .text((d) => d);
 
-    explanatoryLegend
-        .append("rect")
-        .attr("x", 0)
-        .attr("y", 0)
-        .attr("width", 20)
-        .attr("height", 20)
-        .style("fill", color(0));
-    explanatoryLegend
-        .append("text")
-        .attr("x", 30)
-        .attr("y", 15)
-        .text("Low number of requests");
+    // Update heatmap on region selection change
+    regionSelector.on("change", function() {
+        const selectedRegions = Array.from(this.selectedOptions, option => option.value);
+        updateHeatmap(pivotData, d3.select("#timeSelector").property("value"), selectedRegions);
+    });
 
-    explanatoryLegend
-        .append("rect")
-        .attr("x", 150)
-        .attr("y", 0)
-        .attr("width", 20)
-        .attr("height", 20)
-        .style("fill", color(zMax / 2));
-    explanatoryLegend
-        .append("text")
-        .attr("x", 180)
-        .attr("y", 15)
-        .text("Medium number of requests");
-
-    explanatoryLegend
-        .append("rect")
-        .attr("x", 320)
-        .attr("y", 0)
-        .attr("width", 20)
-        .attr("height", 20)
-        .style("fill", color(zMax));
-    explanatoryLegend
-        .append("text")
-        .attr("x", 350)
-        .attr("y", 15)
-        .text("High number of requests");
-
+    // Update heatmap on time period selection change
     d3.select("#timeSelector").on("change", function () {
         const timeUnit = this.value;
         aggregatedData = aggregateData(data, timeUnit);
         pivotData = createPivotTable(aggregatedData);
-        updateHeatmap(pivotData, timeUnit);
+        updateHeatmap(pivotData, timeUnit, Array.from(regionSelector.node().selectedOptions, option => option.value));
     });
 });
