@@ -285,7 +285,7 @@ legendGradient.selectAll("stop")
     legendSvg
         .append("g")
         .attr("class", "axis text-sm")
-        .attr("transform", translate(${legendWidth}, 0))
+        .attr("transform", `translate(${legendWidth}, 0)`)
         .call(legendAxis);
 
     legendSvg
@@ -294,7 +294,7 @@ legendGradient.selectAll("stop")
         .attr("y", -10)
         .attr("text-anchor", "middle")
         .attr("class", "text-sm font-semibold text-gray-700")
-        .text("Requests");
+        .text("Requetes");
 
     function updateLegend(color) {
         const legendGradient = legendSvg.select("defs linearGradient");
