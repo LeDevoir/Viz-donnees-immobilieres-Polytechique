@@ -182,7 +182,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     updateGradient(data);
 
     let zMax = d3.max(
-        Object.values(pivotData).flatMap((d) => Object.values(d))
+        Object.values(pivotData).flatMap((d) => Object.values(d))    
     );
 
     const colorSelector = d3
@@ -308,7 +308,7 @@ legendGradient.selectAll("stop")
     }
         function updateGradient(data) {
        
-        let zMax = d3.max(data, d => d.NB_REQST); 
+        let zMaxq = d3.max(data, d => d.NB_REQST); 
         colorScale.domain([0, zMax]); 
 
         
@@ -317,8 +317,8 @@ legendGradient.selectAll("stop")
             .selectAll("stop")
             .data([
                 {offset: "0%", color: colorScale(0), opacity: 0.2},
-                {offset: "50%", color: colorScale(zMax * 0.5), opacity: 0.6},
-                {offset: "100%", color: colorScale(zMax), opacity: 1}
+                {offset: "50%", color: colorScale(zMaxq * 0.5), opacity: 0.6},
+                {offset: "100%", color: colorScale(zMaxq), opacity: 1}
             ])
             .join("stop")
             .attr("offset", d => d.offset)
