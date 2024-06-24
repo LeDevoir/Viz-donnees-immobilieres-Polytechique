@@ -56,7 +56,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     let aggregatedData = aggregateData(data, "month");
     let pivotData = createPivotTable(aggregatedData);
 
-    const margin = { top: 50, right: 100, bottom: 150, left: 200 };
+    const margin = { top: 50, right: 50, bottom: 100, left: 100 };
     const width = 800 - margin.left - margin.right;
     const height = 600 - margin.top - margin.bottom;
 
@@ -104,7 +104,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     // Add X Axis Label
     svg.append("text")
         .attr("class", "axis-label text-xl font-semibold")
-        .attr("transform", `translate(${width / 2}, ${height + margin.bottom - 20})`)
+        .attr("transform", `translate(${width / 2}, ${height + margin.bottom - 30})`)
         .style("text-anchor", "middle")
         .text("Months");
 
@@ -112,8 +112,8 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     svg.append("text")
         .attr("class", "axis-label text-xl font-semibold")
         .attr("transform", "rotate(-90)")
-        .attr("y", 0 - margin.left + 20)
-        .attr("x", 0 - height / 2)
+        .attr("y", -margin.left + 20)
+        .attr("x", -height / 2)
         .attr("dy", "1em")
         .style("text-anchor", "middle")
         .text("Regions");
@@ -132,7 +132,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         xAxis
             .call(
                 d3.axisBottom(x).tickValues(
-                    x.domain().filter(function (d, i) {
+                                        x.domain().filter(function (d, i) {
                         return !(i % (timeUnit === "month" ? 3 : 1));
                     })
                 )
@@ -218,7 +218,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     const legendSvg = d3
         .select("#legend")
         .append("svg")
-                .attr("width", legendWidth + margin.right)
+        .attr("width", legendWidth + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", `translate(10, ${margin.top})`);
