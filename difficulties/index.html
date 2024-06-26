@@ -29,13 +29,11 @@
 
     <div class="flex flex-row">
       <div class="flex-1" id="content">
+        <!DOCTYPE html>
         <html lang="en">
           <head>
             <meta charset="UTF-8" />
-            <meta
-              name="viewport"
-              content="width=device-width, initial-scale=1.0"
-            />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
             <script src="https://d3js.org/d3.v7.min.js"></script>
             <style>
               .tooltip {
@@ -51,19 +49,19 @@
                 pointer-events: none;
                 visibility: hidden;
               }
-
+        
               .container {
                 display: flex;
                 justify-content: space-between; /* Distribute items evenly; controls will be on the right */
                 align-items: flex-start; /* Align items at the top */
                 height: 100vh; /* Full viewport height */
               }
-
+        
               .map-container {
                 flex: 1; /* Take up remaining space */
                 padding: 20px; /* Adjust padding as needed */
               }
-
+        
               button {
                 padding: 5px 10px; /* Adjust padding */
                 font-size: 16px; /* Adjust font size */
@@ -74,11 +72,11 @@
                 cursor: pointer;
                 transition: background-color 0.3s ease;
               }
-
+        
               button:hover {
                 background-color: #1e40af; /* Darker shade on hover */
               }
-
+        
               .button-container {
                 display: flex;
                 flex-direction: column;
@@ -86,11 +84,21 @@
                 gap: 10px; /* Adjust spacing between buttons */
                 padding: 10px;
               }
+
+              #pageTitle {
+                text-align: center;
+                font-size: 24px;
+                font-weight: bold;
+                margin: 20px 0;
+                color: #333;
+              }
+
             </style>
           </head>
           <body>
             <div id="map-container">
               <div id="map">
+                <h1 id="pageTitle">La détresse financière au Québec en nombre</h1>
                 <svg id="mapSvg" width="100%" height="100%"></svg>
                 <div id="tooltip" class="tooltip"></div>
               </div>
@@ -118,13 +126,13 @@
                 </div>
               </div>
             </div>
-
+        
             <script>
               document.addEventListener("DOMContentLoaded", function () {
                 const mapRef = document.getElementById("mapSvg");
                 const legendRef = document.getElementById("legendSvg");
                 const tooltipRef = document.getElementById("tooltip");
-
+        
                 let geojsonData = null;
                 let csvData = [];
                 let years = [];
@@ -134,7 +142,7 @@
                 let selectedEndMonth = null;
                 let monthsInStartYear = [];
                 let monthsInEndYear = [];
-
+        
                 const regionNames = {
                   1: "Bas-Saint-Laurent",
                   2: "Saguenay-Lac-Saint-Jean",
@@ -154,7 +162,7 @@
                   16: "Montérégie",
                   17: "Centre-du-Québec",
                 };
-
+        
                 const categoryNames = {
                   25: "Avis de vente impôt foncier",
                   26: "Faillites",
@@ -162,7 +170,7 @@
                   28: "Préavis d'exercice",
                   29: "Saisies",
                 };
-
+        
                 const monthNames = {
                   1: "Janvier",
                   2: "Février",
@@ -177,7 +185,7 @@
                   11: "Novembre",
                   12: "Décembre",
                 };
-
+        
                 function loadData() {
                   d3.json("quebec-with-regions.geojson")
                     .then((data) => {
@@ -187,7 +195,7 @@
                     .catch((error) =>
                       console.error("Error loading GeoJSON data: ", error),
                     );
-
+        
                   d3.csv("donn_diff_fin_reqst.csv")
                     .then((data) => {
                       const parsedData = data.reduce((acc, d) => {
@@ -196,20 +204,27 @@
                         const region = +d.ID_REGN_ADMIN;
                         const category = +d.CD_CATGR_NATR;
                         const distressedPeople = +d.NB_REQST;
-
+        
                         const existingItem = acc.find(
                           (item) =>
                             item.year === year &&
                             item.month === month &&
                             item.region === region,
                         );
-
+        
                         if (existingItem) {
                           existingItem.distressedPeople += distressedPeople;
-                          existingItem.categories.push({
-                            category,
-                            distressedPeople,
-                          });
+                          const categoryItem = existingItem.categories.find(
+                            (c) => c.category === category,
+                          );
+                          if (categoryItem) {
+                            categoryItem.distressedPeople += distressedPeople;
+                          } else {
+                            existingItem.categories.push({
+                              category,
+                              distressedPeople,
+                            });
+                          }
                         } else {
                           acc.push({
                             year,
@@ -219,21 +234,19 @@
                             categories: [{ category, distressedPeople }],
                           });
                         }
-
+        
                         return acc;
                       }, []);
-
+        
                       csvData = parsedData;
                       years = [...new Set(parsedData.map((d) => d.year))];
                       selectedStartYear = years[0];
                       selectedEndYear = years[0];
-
-                      const uniqueMonths = [
-                        ...new Set(parsedData.map((d) => d.month)),
-                      ];
+        
+                      const uniqueMonths = [...new Set(parsedData.map((d) => d.month))];
                       selectedStartMonth = uniqueMonths[0];
                       selectedEndMonth = uniqueMonths[0];
-
+        
                       updateControls();
                       drawMap();
                     })
@@ -241,24 +254,21 @@
                       console.error("Error loading CSV data: ", error),
                     );
                 }
-
+        
                 function drawMap() {
                   if (!geojsonData || csvData.length === 0) return;
-
+        
                   const mapContainerWidth = 0.75 * window.innerWidth;
                   const mapContainerHeight = 600;
-
+        
                   const projection = d3
                     .geoMercator()
-                    .fitSize(
-                      [mapContainerWidth, mapContainerHeight],
-                      geojsonData,
-                    );
+                    .fitSize([mapContainerWidth, mapContainerHeight], geojsonData);
                   const path = d3.geoPath().projection(projection);
-
+        
                   let totalDistressedPeople = 0;
                   const categoryTotals = {};
-
+        
                   geojsonData.features.forEach((d) => {
                     const regionId = d.properties.res_co_reg;
                     const dataForRegion = csvData.filter(
@@ -269,17 +279,34 @@
                         data.month >= selectedStartMonth &&
                         data.month <= selectedEndMonth,
                     );
-
+        
                     d.properties.totalDistressedPeople = dataForRegion.reduce(
                       (sum, data) => sum + data.distressedPeople,
                       0,
                     );
-                    d.properties.categories = dataForRegion.flatMap(
-                      (data) => data.categories,
+        
+                    const aggregatedCategories = dataForRegion.reduce(
+                      (acc, data) => {
+                        data.categories.forEach((c) => {
+                          if (!acc[c.category]) {
+                            acc[c.category] = 0;
+                          }
+                          acc[c.category] += c.distressedPeople;
+                        });
+                        return acc;
+                      },
+                      {},
                     );
-
+        
+                    d.properties.categories = Object.keys(aggregatedCategories).map(
+                      (key) => ({
+                        category: +key,
+                        distressedPeople: aggregatedCategories[key],
+                      }),
+                    );
+        
                     totalDistressedPeople += d.properties.totalDistressedPeople;
-
+        
                     d.properties.categories.forEach((c) => {
                       if (!categoryTotals[c.category]) {
                         categoryTotals[c.category] = 0;
@@ -287,81 +314,57 @@
                       categoryTotals[c.category] += c.distressedPeople;
                     });
                   });
-
+        
                   const maxDistressedPeople =
                     d3.max(
                       geojsonData.features,
                       (d) => d.properties.totalDistressedPeople,
                     ) || 0;
-                  const colorScale = d3
-                    .scaleSequential()
-                    .domain([0, maxDistressedPeople])
-                    .interpolator(d3.interpolateViridis);
-
-                  const svg = d3
-                    .select(mapRef)
-                    .attr("width", mapContainerWidth)
-                    .attr("height", mapContainerHeight);
-                  svg.selectAll("*").remove();
-
+                    const colorScale = d3.scaleSequential()
+  .domain([0, maxDistressedPeople])
+  .interpolator(d3.interpolateRgbBasis(["green", "yellow", "red"]));
+        
+                  d3.select(mapRef).selectAll("*").remove();
+                  d3.select(legendRef).selectAll("*").remove();
+        
+                  const svg = d3.select(mapRef);
+        
                   svg
-                    .append("text")
-                    .attr("x", "70%")
-                    .attr("y", 30)
-                    .attr("text-anchor", "middle")
-                    .style("font-size", "18px")
-                    .style("font-weight", "bold")
-                    .text("La détresse financière au Québec en nombre");
-
+                    .attr("width", mapContainerWidth)
+                    .attr("height", mapContainerHeight)
+                    .attr("viewBox", `0 0 ${mapContainerWidth} ${mapContainerHeight}`);
+        
                   svg
                     .selectAll("path")
                     .data(geojsonData.features)
                     .enter()
                     .append("path")
                     .attr("d", path)
-                    .attr("fill", (d) =>
-                      colorScale(d.properties.totalDistressedPeople),
-                    )
-                    .attr("stroke", "white")
-                    .on("mouseover", (event, d) => {
-                      const distressedData = d.properties.totalDistressedPeople;
-                      const categories = d.properties.categories
-                        .map(
-                          (c) =>
-                            `${categoryNames[c.category]} : ${c.distressedPeople}`,
-                        )
-                        .join("<br/>");
-
-                      d3.select(tooltipRef)
-                        .html(
-                          `
-                <strong>Région : </strong>${d.properties.res_co_reg} - ${regionNames[d.properties.res_co_reg]} <br/>
-                <strong>Période : </strong>${monthNames[selectedStartMonth]} ${selectedStartYear} - ${monthNames[selectedEndMonth]} ${selectedEndYear}<br/>
-                <strong>Nombre total de détresse financière : </strong> ${distressedData}<br/>
-                <strong>Catégories : </strong><br/>${categories}
-              `,
-                        )
-                        .style("visibility", "visible");
+                    .attr("fill", (d) => colorScale(d.properties.totalDistressedPeople))
+                    .attr("stroke", "#fff")
+                    .attr("stroke-width", 1)
+                    .on("mouseover", function (event, d) {
+                      const tooltipHtml = `<strong>${regionNames[d.properties.res_co_reg]}</strong><br>
+                        Total: ${d.properties.totalDistressedPeople}<br>
+                        ${d.properties.categories
+                          .map(
+                            (c) =>
+                              `${categoryNames[c.category]}: ${c.distressedPeople}`,
+                          )
+                          .join("<br>")}`;
+        
+                      tooltipRef.innerHTML = tooltipHtml;
+                      tooltipRef.style.visibility = "visible";
                     })
-                    .on("mousemove", (event) => {
-                      const tooltipNode = tooltipRef;
-
-                      if (tooltipNode) {
-                        const tooltipWidth = tooltipNode.offsetWidth;
-                        const tooltipHeight = tooltipNode.offsetHeight;
-                        const left = event.pageX - tooltipWidth / 2 - 150;
-                        const top = event.pageY;
-
-                        d3.select(tooltipNode)
-                          .style("left", `${left}px`)
-                          .style("top", `${top}px`);
-                      }
+                    .on("mousemove", function (event) {
+                      tooltipRef.style.top = event.pageY + 15 + "px";
+                      tooltipRef.style.left = event.pageX + 15 + "px";
                     })
-                    .on("mouseout", () => {
-                      d3.select(tooltipRef).style("visibility", "hidden");
+                    .on("mouseout", function () {
+                      tooltipRef.style.visibility = "hidden";
                     });
 
-                  const legendContainerWidth = 0.75 * window.innerWidth;
+                const legendContainerWidth = 0.9 * window.innerWidth;
                   const legendContainerHeight = 60;
 
                   const legendSvg = d3
@@ -379,8 +382,8 @@
                     .attr("y1", "0%")
                     .attr("x2", "100%")
                     .attr("y2", "0%");
-
-                  legendGradient
+                
+                    legendGradient
                     .selectAll("stop")
                     .data(
                       colorScale
@@ -453,94 +456,111 @@
                     .style("font-size", "12px")
                     .text("Élevé");
                 }
-
+        
                 function updateControls() {
-                  const startYearButtons = d3.select("#startYearButtons");
-                  const endYearButtons = d3.select("#endYearButtons");
-                  const startMonthButtons = d3.select("#startMonthButtons");
-                  const endMonthButtons = d3.select("#endMonthButtons");
-
-                  startYearButtons.selectAll("button").remove();
-                  endYearButtons.selectAll("button").remove();
-                  startMonthButtons.selectAll("button").remove();
-                  endMonthButtons.selectAll("button").remove();
-
-                  years.forEach((year) => {
-                    startYearButtons
-                      .append("button")
-                      .attr(
-                        "class",
-                        `yearButton ${year === selectedStartYear ? "selected" : ""}`,
-                      )
-                      .text(year)
-                      .on("click", () => {
-                        selectedStartYear = year;
-                        monthsInStartYear = getMonthsForYear(year);
-                        selectedStartMonth = monthsInStartYear[0];
-                        updateControls();
-                        drawMap();
-                      });
-
-                    endYearButtons
-                      .append("button")
-                      .attr(
-                        "class",
-                        `yearButton ${year === selectedEndYear ? "selected" : ""}`,
-                      )
-                      .text(year)
-                      .on("click", () => {
-                        selectedEndYear = year;
-                        monthsInEndYear = getMonthsForYear(year);
-                        selectedEndMonth = monthsInEndYear[0];
-                        updateControls();
-                        drawMap();
-                      });
-                  });
-
-                  monthsInStartYear.forEach((month) => {
-                    startMonthButtons
-                      .append("button")
-                      .attr(
-                        "class",
-                        `monthButton ${month === selectedStartMonth ? "selected" : ""}`,
-                      )
-                      .text(monthNames[month])
-                      .on("click", () => {
-                        selectedStartMonth = month;
-                        updateControls();
-                        drawMap();
-                      });
-                  });
-
-                  monthsInEndYear.forEach((month) => {
-                    endMonthButtons
-                      .append("button")
-                      .attr(
-                        "class",
-                        `monthButton ${month === selectedEndMonth ? "selected" : ""}`,
-                      )
-                      .text(monthNames[month])
-                      .on("click", () => {
-                        selectedEndMonth = month;
-                        updateControls();
-                        drawMap();
-                      });
-                  });
+                  const startYearContainer = d3
+                    .select("#startYearButtons")
+                    .selectAll("button")
+                    .data(years);
+        
+                  startYearContainer
+                    .enter()
+                    .append("button")
+                    .text((d) => d)
+                    .on("click", function (event, d) {
+                      selectedStartYear = d;
+                      monthsInStartYear = getMonthsForYear(d);
+                      updateMonths();
+                      drawMap();
+                    });
+        
+                  startYearContainer
+                    .text((d) => d)
+                    .classed("active", (d) => d === selectedStartYear);
+        
+                  startYearContainer.exit().remove();
+        
+                  const endYearContainer = d3
+                    .select("#endYearButtons")
+                    .selectAll("button")
+                    .data(years);
+        
+                  endYearContainer
+                    .enter()
+                    .append("button")
+                    .text((d) => d)
+                    .on("click", function (event, d) {
+                      selectedEndYear = d;
+                      monthsInEndYear = getMonthsForYear(d);
+                      updateMonths();
+                      drawMap();
+                    });
+        
+                  endYearContainer
+                    .text((d) => d)
+                    .classed("active", (d) => d === selectedEndYear);
+        
+                  endYearContainer.exit().remove();
+        
+                  updateMonths();
                 }
-
+        
+                function updateMonths() {
+                  const startMonthContainer = d3
+                    .select("#startMonthButtons")
+                    .selectAll("button")
+                    .data(monthsInStartYear);
+        
+                  startMonthContainer
+                    .enter()
+                    .append("button")
+                    .text((d) => monthNames[d])
+                    .on("click", function (event, d) {
+                      selectedStartMonth = d;
+                      drawMap();
+                    });
+        
+                  startMonthContainer
+                    .text((d) => monthNames[d])
+                    .classed("active", (d) => d === selectedStartMonth);
+        
+                  startMonthContainer.exit().remove();
+        
+                  const endMonthContainer = d3
+                    .select("#endMonthButtons")
+                    .selectAll("button")
+                    .data(monthsInEndYear);
+        
+                  endMonthContainer
+                    .enter()
+                    .append("button")
+                    .text((d) => monthNames[d])
+                    .on("click", function (event, d) {
+                      selectedEndMonth = d;
+                      drawMap();
+                    });
+        
+                  endMonthContainer
+                    .text((d) => monthNames[d])
+                    .classed("active", (d) => d === selectedEndMonth);
+        
+                  endMonthContainer.exit().remove();
+                }
+        
                 function getMonthsForYear(year) {
-                  const monthsInYear = csvData
-                    .filter((data) => data.year === year)
-                    .map((data) => data.month);
-                  return [...new Set(monthsInYear)].sort((a, b) => a - b);
+                  const months = csvData
+                    .filter((d) => d.year === year)
+                    .map((d) => d.month);
+                  return [...new Set(months)];
                 }
-
+        
                 loadData();
               });
             </script>
           </body>
         </html>
-      </div>
+        
+        </div>
     </div>
 
     <script src="index.js"></script>
