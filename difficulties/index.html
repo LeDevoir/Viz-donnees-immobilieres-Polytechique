@@ -28,522 +28,94 @@
     </div>
 
     <div class="flex flex-row">
-      <div class="flex-1" id="content">
-        <html lang="en">
-          <head>
-            <meta charset="UTF-8" />
-            <meta
-              name="viewport"
-              content="width=device-width, initial-scale=1.0"
-            />
-            <script src="https://d3js.org/d3.v7.min.js"></script>
-            <style>
-              .tooltip {
-                position: absolute;
-                text-align: center;
-                width: auto;
-                height: auto;
-                padding: 8px;
-                font: 12px sans-serif;
-                background: lightsteelblue;
-                border: 0px;
-                border-radius: 8px;
-                pointer-events: none;
-                visibility: hidden;
-              }
+        <div class="flex-1" id="content">
+        <!-- inspired by chatgpt -->
+        <!DOCTYPE html>
+            <html lang="en">
+                <head>
+                    <meta charset="UTF-8" />
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                    <script src="https://d3js.org/d3.v7.min.js"></script>
+                    <style>
+                    .tooltip {
+                        position: absolute;
+                        text-align: center;
+                        width: auto;
+                        height: auto;
+                        padding: 8px;
+                        font: 12px sans-serif;
+                        background: lightsteelblue;
+                        border: 0px;
+                        border-radius: 8px;
+                        pointer-events: none;
+                        visibility: hidden;
+                    }
 
-              .container {
-                display: flex;
-                justify-content: space-between; /* Distribute items evenly; controls will be on the right */
-                align-items: flex-start; /* Align items at the top */
-                height: 100vh; /* Full viewport height */
-              }
+                    .container {
+                        display: flex;
+                        justify-content: space-between; /* Distribute items evenly; controls will be on the right */
+                        align-items: flex-start; /* Align items at the top */
+                        height: 100vh; /* Full viewport height */
+                    }
 
-              .map-container {
-                flex: 1; /* Take up remaining space */
-                padding: 20px; /* Adjust padding as needed */
-              }
+                    .map-container {
+                        flex: 1; /* Take up remaining space */
+                        padding: 20px; /* Adjust padding as needed */
+                    }
 
-              button {
-                padding: 5px 10px; /* Adjust padding */
-                font-size: 16px; /* Adjust font size */
-                font-weight: bold;
-                border-radius: 8px; /* Adjust border radius */
-                background-color: #2563eb; /* Button background color */
-                color: white; /* Text color */
-                cursor: pointer;
-                transition: background-color 0.3s ease;
-              }
+                    .button-container {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        gap: 10px; /* Adjust spacing between controls */
+                        padding: 10px;
+                    }
 
-              button:hover {
-                background-color: #1e40af; /* Darker shade on hover */
-              }
-
-              .button-container {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 10px; /* Adjust spacing between buttons */
-                padding: 10px;
-              }
-            </style>
-          </head>
-          <body>
-            <div id="map-container">
-              <div id="map">
-                <svg id="mapSvg" width="100%" height="100%"></svg>
-                <div id="tooltip" class="tooltip"></div>
-              </div>
-              <div id="legend">
-                <svg id="legendSvg"></svg>
-              </div>
-              <div id="controls" class="button-container">
-                <div id="time-range">
-                  <div>
-                    <label>Sélectionner l'année de début : </label>
-                    <div id="startYearButtons"></div>
-                    <div>
-                      <label>Sélectionner le mois de début : </label>
-                      <div id="startMonthButtons"></div>
+                    #pageTitle {
+                        text-align: center;
+                        font-size: 24px;
+                        font-weight: bold;
+                        margin: 20px 0;
+                        color: #333;
+                    }
+                    </style>
+                </head>
+                <body>
+                    <div id="map-container">
+                        <div id="map">
+                            <h1 id="pageTitle">La détresse financière au Québec en nombre</h1>
+                            <svg id="mapSvg" width="100%" height="100%"></svg>
+                            <div id="tooltip" class="tooltip"></div>
+                        </div>
+                        <div id="legend">
+                            <svg id="legendSvg"></svg>
+                        </div>
+                        <div id="controls" class="button-container">
+                            <div id="time-range">
+                                <div>
+                                    <label for="startYearSelect">Sélectionner l'année de début : </label>
+                                    <select id="startYearSelect"></select>
+                                    <div>
+                                        <label for="startMonthSelect">Sélectionner le mois de début : </label>
+                                        <select id="startMonthSelect"></select>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label for="endYearSelect">Sélectionner l'année de fin : </label>
+                                    <select id="endYearSelect"></select>
+                                    <div>
+                                        <label for="endMonthSelect">Sélectionner le mois de fin : </label>
+                                        <select id="endMonthSelect"></select>
+                                    </div>
+                                </div>
+                        </div>
                     </div>
-                  </div>
-                  <div>
-                    <label>Sélectionner l'année de fin : </label>
-                    <div id="endYearButtons"></div>
-                    <div>
-                      <label>Sélectionner le mois de fin : </label>
-                      <div id="endMonthButtons"></div>
                     </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <script>
-              document.addEventListener("DOMContentLoaded", function () {
-                const mapRef = document.getElementById("mapSvg");
-                const legendRef = document.getElementById("legendSvg");
-                const tooltipRef = document.getElementById("tooltip");
-
-                let geojsonData = null;
-                let csvData = [];
-                let years = [];
-                let selectedStartYear = null;
-                let selectedEndYear = null;
-                let selectedStartMonth = null;
-                let selectedEndMonth = null;
-                let monthsInStartYear = [];
-                let monthsInEndYear = [];
-
-                const regionNames = {
-                  1: "Bas-Saint-Laurent",
-                  2: "Saguenay-Lac-Saint-Jean",
-                  3: "Capitale-Nationale",
-                  4: "Mauricie",
-                  5: "Estrie",
-                  6: "Montréal",
-                  7: "Outaouais",
-                  8: "Abitibi-Témiscamingue",
-                  9: "Côte-Nord",
-                  10: "Nord du Québec (pas de données)",
-                  11: "Gaspésie-Îles-de-la-Madeleine",
-                  12: "Chaudière-Appalaches",
-                  13: "Laval",
-                  14: "Lanaudière",
-                  15: "Laurentides",
-                  16: "Montérégie",
-                  17: "Centre-du-Québec",
-                };
-
-                const categoryNames = {
-                  25: "Avis de vente impôt foncier",
-                  26: "Faillites",
-                  27: "Hypothèques construction",
-                  28: "Préavis d'exercice",
-                  29: "Saisies",
-                };
-
-                const monthNames = {
-                  1: "Janvier",
-                  2: "Février",
-                  3: "Mars",
-                  4: "Avril",
-                  5: "Mai",
-                  6: "Juin",
-                  7: "Juillet",
-                  8: "Août",
-                  9: "Septembre",
-                  10: "Octobre",
-                  11: "Novembre",
-                  12: "Décembre",
-                };
-
-                function loadData() {
-                  d3.json("quebec-with-regions.geojson")
-                    .then((data) => {
-                      geojsonData = data;
-                      drawMap();
-                    })
-                    .catch((error) =>
-                      console.error("Error loading GeoJSON data: ", error),
-                    );
-
-                  d3.csv("donn_diff_fin_reqst.csv")
-                    .then((data) => {
-                      const parsedData = data.reduce((acc, d) => {
-                        const year = +d.DT_DEBUT_MOIS.substring(0, 4);
-                        const month = +d.DT_DEBUT_MOIS.substring(5, 7);
-                        const region = +d.ID_REGN_ADMIN;
-                        const category = +d.CD_CATGR_NATR;
-                        const distressedPeople = +d.NB_REQST;
-
-                        const existingItem = acc.find(
-                          (item) =>
-                            item.year === year &&
-                            item.month === month &&
-                            item.region === region,
-                        );
-
-                        if (existingItem) {
-                          existingItem.distressedPeople += distressedPeople;
-                          existingItem.categories.push({
-                            category,
-                            distressedPeople,
-                          });
-                        } else {
-                          acc.push({
-                            year,
-                            month,
-                            region,
-                            distressedPeople,
-                            categories: [{ category, distressedPeople }],
-                          });
-                        }
-
-                        return acc;
-                      }, []);
-
-                      csvData = parsedData;
-                      years = [...new Set(parsedData.map((d) => d.year))];
-                      selectedStartYear = years[0];
-                      selectedEndYear = years[0];
-
-                      const uniqueMonths = [
-                        ...new Set(parsedData.map((d) => d.month)),
-                      ];
-                      selectedStartMonth = uniqueMonths[0];
-                      selectedEndMonth = uniqueMonths[0];
-
-                      updateControls();
-                      drawMap();
-                    })
-                    .catch((error) =>
-                      console.error("Error loading CSV data: ", error),
-                    );
-                }
-
-                function drawMap() {
-                  if (!geojsonData || csvData.length === 0) return;
-
-                  const mapContainerWidth = 0.75 * window.innerWidth;
-                  const mapContainerHeight = 600;
-
-                  const projection = d3
-                    .geoMercator()
-                    .fitSize(
-                      [mapContainerWidth, mapContainerHeight],
-                      geojsonData,
-                    );
-                  const path = d3.geoPath().projection(projection);
-
-                  let totalDistressedPeople = 0;
-                  const categoryTotals = {};
-
-                  geojsonData.features.forEach((d) => {
-                    const regionId = d.properties.res_co_reg;
-                    const dataForRegion = csvData.filter(
-                      (data) =>
-                        data.region === regionId &&
-                        data.year >= selectedStartYear &&
-                        data.year <= selectedEndYear &&
-                        data.month >= selectedStartMonth &&
-                        data.month <= selectedEndMonth,
-                    );
-
-                    d.properties.totalDistressedPeople = dataForRegion.reduce(
-                      (sum, data) => sum + data.distressedPeople,
-                      0,
-                    );
-                    d.properties.categories = dataForRegion.flatMap(
-                      (data) => data.categories,
-                    );
-
-                    totalDistressedPeople += d.properties.totalDistressedPeople;
-
-                    d.properties.categories.forEach((c) => {
-                      if (!categoryTotals[c.category]) {
-                        categoryTotals[c.category] = 0;
-                      }
-                      categoryTotals[c.category] += c.distressedPeople;
-                    });
-                  });
-
-                  const maxDistressedPeople =
-                    d3.max(
-                      geojsonData.features,
-                      (d) => d.properties.totalDistressedPeople,
-                    ) || 0;
-                  const colorScale = d3
-                    .scaleSequential()
-                    .domain([0, maxDistressedPeople])
-                    .interpolator(d3.interpolateViridis);
-
-                  const svg = d3
-                    .select(mapRef)
-                    .attr("width", mapContainerWidth)
-                    .attr("height", mapContainerHeight);
-                  svg.selectAll("*").remove();
-
-                  svg
-                    .append("text")
-                    .attr("x", "70%")
-                    .attr("y", 30)
-                    .attr("text-anchor", "middle")
-                    .style("font-size", "18px")
-                    .style("font-weight", "bold")
-                    .text("La détresse financière au Québec en nombre");
-
-                  svg
-                    .selectAll("path")
-                    .data(geojsonData.features)
-                    .enter()
-                    .append("path")
-                    .attr("d", path)
-                    .attr("fill", (d) =>
-                      colorScale(d.properties.totalDistressedPeople),
-                    )
-                    .attr("stroke", "white")
-                    .on("mouseover", (event, d) => {
-                      const distressedData = d.properties.totalDistressedPeople;
-                      const categories = d.properties.categories
-                        .map(
-                          (c) =>
-                            `${categoryNames[c.category]} : ${c.distressedPeople}`,
-                        )
-                        .join("<br/>");
-
-                      d3.select(tooltipRef)
-                        .html(
-                          `
-                <strong>Région : </strong>${d.properties.res_co_reg} - ${regionNames[d.properties.res_co_reg]} <br/>
-                <strong>Période : </strong>${monthNames[selectedStartMonth]} ${selectedStartYear} - ${monthNames[selectedEndMonth]} ${selectedEndYear}<br/>
-                <strong>Nombre total de détresse financière : </strong> ${distressedData}<br/>
-                <strong>Catégories : </strong><br/>${categories}
-              `,
-                        )
-                        .style("visibility", "visible");
-                    })
-                    .on("mousemove", (event) => {
-                      const tooltipNode = tooltipRef;
-
-                      if (tooltipNode) {
-                        const tooltipWidth = tooltipNode.offsetWidth;
-                        const tooltipHeight = tooltipNode.offsetHeight;
-                        const left = event.pageX - tooltipWidth / 2 - 150;
-                        const top = event.pageY;
-
-                        d3.select(tooltipNode)
-                          .style("left", `${left}px`)
-                          .style("top", `${top}px`);
-                      }
-                    })
-                    .on("mouseout", () => {
-                      d3.select(tooltipRef).style("visibility", "hidden");
-                    });
-
-                  const legendContainerWidth = 0.75 * window.innerWidth;
-                  const legendContainerHeight = 60;
-
-                  const legendSvg = d3
-                    .select(legendRef)
-                    .attr("width", legendContainerWidth)
-                    .attr("height", legendContainerHeight);
-
-                  legendSvg.selectAll("*").remove();
-
-                  const legendGradient = legendSvg
-                    .append("defs")
-                    .append("linearGradient")
-                    .attr("id", "legendGradient")
-                    .attr("x1", "0%")
-                    .attr("y1", "0%")
-                    .attr("x2", "100%")
-                    .attr("y2", "0%");
-
-                  legendGradient
-                    .selectAll("stop")
-                    .data(
-                      colorScale
-                        .ticks()
-                        .map((t, i, n) => ({
-                          offset: `${(100 * i) / n.length}%`,
-                          color: colorScale(t),
-                        })),
-                    )
-                    .enter()
-                    .append("stop")
-                    .attr("offset", (d) => d.offset)
-                    .attr("stop-color", (d) => d.color);
-
-                  legendSvg
-                    .append("rect")
-                    .attr("x", legendContainerWidth * 0.3)
-                    .attr("y", legendContainerHeight / 3)
-                    .attr("width", legendContainerWidth * 0.4)
-                    .attr("height", legendContainerHeight / 3)
-                    .style("fill", "url(#legendGradient)");
-
-                  const legendScale = d3
-                    .scaleLinear()
-                    .domain(colorScale.domain())
-                    .range([
-                      legendContainerWidth * 0.3,
-                      legendContainerWidth * 0.7,
-                    ]);
-
-                  const legendAxis = d3
-                    .axisBottom(legendScale)
-                    .ticks(5)
-                    .tickSize(-legendContainerHeight / 3);
-
-                  legendSvg
-                    .append("g")
-                    .attr(
-                      "transform",
-                      `translate(0, ${legendContainerHeight * 0.65})`,
-                    )
-                    .call(legendAxis)
-                    .select(".domain")
-                    .remove();
-
-                  legendSvg
-                    .append("text")
-                    .attr("x", legendContainerWidth / 2)
-                    .attr("y", legendContainerHeight)
-                    .attr("text-anchor", "middle")
-                    .style("font-size", "12px")
-                    .text("Nombre total de détresse financière");
-
-                  legendSvg
-                    .append("text")
-                    .attr("x", legendContainerWidth / 3 - 50)
-                    .attr("y", legendContainerHeight * 0.65 + 5)
-                    .attr("text-anchor", "end")
-                    .style("font-size", "12px")
-                    .text("Faible");
-
-                  legendSvg
-                    .append("text")
-                    .attr(
-                      "x",
-                      legendContainerWidth - (legendContainerWidth / 3 - 50),
-                    )
-                    .attr("y", legendContainerHeight * 0.65 + 5)
-                    .attr("text-anchor", "start")
-                    .style("font-size", "12px")
-                    .text("Élevé");
-                }
-
-                function updateControls() {
-                  const startYearButtons = d3.select("#startYearButtons");
-                  const endYearButtons = d3.select("#endYearButtons");
-                  const startMonthButtons = d3.select("#startMonthButtons");
-                  const endMonthButtons = d3.select("#endMonthButtons");
-
-                  startYearButtons.selectAll("button").remove();
-                  endYearButtons.selectAll("button").remove();
-                  startMonthButtons.selectAll("button").remove();
-                  endMonthButtons.selectAll("button").remove();
-
-                  years.forEach((year) => {
-                    startYearButtons
-                      .append("button")
-                      .attr(
-                        "class",
-                        `yearButton ${year === selectedStartYear ? "selected" : ""}`,
-                      )
-                      .text(year)
-                      .on("click", () => {
-                        selectedStartYear = year;
-                        monthsInStartYear = getMonthsForYear(year);
-                        selectedStartMonth = monthsInStartYear[0];
-                        updateControls();
-                        drawMap();
-                      });
-
-                    endYearButtons
-                      .append("button")
-                      .attr(
-                        "class",
-                        `yearButton ${year === selectedEndYear ? "selected" : ""}`,
-                      )
-                      .text(year)
-                      .on("click", () => {
-                        selectedEndYear = year;
-                        monthsInEndYear = getMonthsForYear(year);
-                        selectedEndMonth = monthsInEndYear[0];
-                        updateControls();
-                        drawMap();
-                      });
-                  });
-
-                  monthsInStartYear.forEach((month) => {
-                    startMonthButtons
-                      .append("button")
-                      .attr(
-                        "class",
-                        `monthButton ${month === selectedStartMonth ? "selected" : ""}`,
-                      )
-                      .text(monthNames[month])
-                      .on("click", () => {
-                        selectedStartMonth = month;
-                        updateControls();
-                        drawMap();
-                      });
-                  });
-
-                  monthsInEndYear.forEach((month) => {
-                    endMonthButtons
-                      .append("button")
-                      .attr(
-                        "class",
-                        `monthButton ${month === selectedEndMonth ? "selected" : ""}`,
-                      )
-                      .text(monthNames[month])
-                      .on("click", () => {
-                        selectedEndMonth = month;
-                        updateControls();
-                        drawMap();
-                      });
-                  });
-                }
-
-                function getMonthsForYear(year) {
-                  const monthsInYear = csvData
-                    .filter((data) => data.year === year)
-                    .map((data) => data.month);
-                  return [...new Set(monthsInYear)].sort((a, b) => a - b);
-                }
-
-                loadData();
-              });
-            </script>
-          </body>
-        </html>
-      </div>
+                    <script src="index.js"></script>
+                </body>
+            </html>
+        </div>
     </div>
-
-    <script src="index.js"></script>
   </body>
 </html>
 
