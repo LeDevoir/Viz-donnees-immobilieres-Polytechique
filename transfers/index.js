@@ -24,7 +24,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         d.Year = d3.timeFormat("%Y")(d.Month);
         d.MonthFormatted = d3.timeFormat("%Y-%m")(d.Month);
         d.NB_REQST = +d.NB_REQST;
-        d.Region = regionNames[+d.ID_REGN_ADMIN];
+        d.Region = regionNames[+d.ID_REGN_ADMIN] || "Unknown Region"; // Handle undefined regions
     });
 
     const minDate = d3.min(data, d => d.Month);
@@ -145,7 +145,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         d3.select(".axis-label")
             .text(xAxisLabel);
         const times = Array.from(new Set(data.map((d) => timeUnit === "month" ? d.MonthFormatted : d.Year)));
-        if (selectedDate !== "AA-MM") {
+        if (selectedDate !== "All") {
             x.domain([selectedDate]);
         } else {
             x.domain(times);
