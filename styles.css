@@ -1,65 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 body {
-    font-family: Arial, sans-serif;
-    display: flex;
-    margin: 0;
-    height: 100vh;
+  font-family: Arial, sans-serif;
+  display: flex;
+  margin: 0;
+  height: 100vh;
 }
 
 .sidebar {
-    width: 200px;
-    background-color: #333;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
+  width: 200px;
+  background-color: #333;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 .sidebar button {
-    background-color: #444;
-    color: white;
-    border: none;
-    padding: 15px;
-    margin: 5px 0;
-    cursor: pointer;
-    text-align: left;
+  background-color: #444;
+  color: white;
+  border: none;
+  padding: 15px;
+  margin: 5px 0;
+  cursor: pointer;
+  text-align: left;
 }
 
 .sidebar button:hover {
-    background-color: #555;
+  background-color: #555;
 }
 
 .content {
-    flex: 1;
-    padding: 20px;
+  flex: 1;
+  padding: 20px;
 }
 
 .tooltip {
-    position: absolute;
-    text-align: center;
-    width: auto;
-    height: auto;
-    padding: 8px;
-    font: 12px sans-serif;
-    background: rgba(0, 0, 0, 0.8);
-    border: 0;
-    border-radius: 4px;
-    pointer-events: none;
-    color: white;
-  }
-
-  
-header{
-    justify-content:flex-start;
-    align-items: center;
-    text-align: center;
-    margin-left:25px;
-    margin-top: 60px;
+  position: absolute;
+  text-align: center;
+  width: auto;
+  height: auto;
+  padding: 8px;
+  font: 12px sans-serif;
+  background: rgba(0, 0, 0, 0.8);
+  border: 0;
+  border-radius: 4px;
+  pointer-events: none;
+  color: white;
 }
 
-h1{
-    align-items: center;
-    text-align: center;
+header {
+  justify-content: flex-start;
+  align-items: center;
+  text-align: center;
+  margin-left: 25px;
+  margin-top: 60px;
 }
 
-#controls{
-    margin-top: -100px;
+h1 {
+  align-items: center;
+  text-align: center;
+}
+
+#controls {
+  margin-top: -100px;
 }

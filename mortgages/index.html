@@ -11,11 +11,11 @@
       rel="stylesheet"
       type="text/css"
     />
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="../output.css" rel="stylesheet" />
   </head>
   <body
     data-theme="light"
-    class="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[135px_1fr]"
+    class="grid min-h-screen h-full w-full md:grid-cols-[220px_1fr] lg:grid-cols-[135px_1fr]"
   >
     <div class="flex h-full flex-col gap-4 p-4 bg-neutral-400">
       <a class="p-2 font-bold btn" href="/">Accueil</a>
@@ -36,69 +36,90 @@
       class="grid min-h-screen w-full md:grid-cols-[1fr_400px] lg:grid-cols-[1fr_280px]"
     >
       <div class="grid grid-rows-[15px_auto_40px] items-center justify-center">
-          <header class=" text-3xl font-extrabold dark:text-white">Hypothèques mensuelles au fil du temps</header>
-          <div class="graph" id="stackedArea">
-            <svg class="stackedArea-svg"></svg>
-          </div>
-          <div class="grid grid-cols-[250px_475px] content-between gap-5 align-top items-center justify-center" id="controls">
-            <div class="time_filter" id="time_filter">
-              <label class="text-black font-bold" for="start-year"
-                >Choisissez la période à couvrir</label
-              >
-              <div class="grid gap-1 grid-cols-[2fr_3fr_3fr] items-center" >
-                <label for="start-year">Début</label>
-                <select class="select select-sm select-bordered" id="start-year">
-                  <option value="2019">2019</option>
-                  <!-- Plus d'options -->
-                </select>
-                <select class="select select-sm select-bordered" id="start-month">
-                  <option value="January">Janvier</option>
-                  <!-- Plus d'options -->
-                </select>
-                <label for="end-year">Fin</label>
-                <select class="select select-sm select-bordered" id="end-year">
-                  <option value="2024">2024</option>
-                  <!-- Plus d'options -->
-                </select>
-                <select class="select select-sm select-bordered" id="end-month">
-                  <option value="June">Juin</option>
-                  <!-- Plus d'options -->
-                </select>
-              </div>
-            </div>
-            <div class="time_filter" id="marker_filter">
-              <label class="text-black font-bold" for="marker-start-year"
-                >Définir les marqueurs de variation du nombre d'hyphothèques</label
-              >
-              <div class="grid gap-1 grid-cols-[2fr_3fr_3fr] items-center">
-                <label for="marker-start-year">Marqueur A</label>
-                <select class="select select-sm select-bordered" id="marker-start-year">
-                  <option value="2019">2019</option>
-                  <!-- Plus d'options -->
-                </select>
-                <select class="select select-sm select-bordered" id="marker-start-month">
-                  <option value="January">Janvier</option>
-                  <!-- Plus d'options -->
-                </select>
-                <label for="marker-end-year">Marqueur B</label>
-                <select class="select select-sm select-bordered" id="marker-end-year">
-                  <option value="2024">2024</option>
-                  <!-- Plus d'options -->
-                </select>
-                <select class="select select-sm select-bordered" id="marker-end-month">
-                  <option value="June">Juin</option>
-                  <!-- Plus d'options -->
-                </select>
-              </div>
+        <header class="text-lg font-extrabold">
+          Hypothèques mensuelles au fil du temps
+        </header>
+        <div class="graph" id="stackedArea">
+          <svg class="stackedArea-svg"></svg>
+        </div>
+        <div
+          class="grid grid-cols-[250px_475px] content-between gap-5 align-top items-center justify-center"
+          id="controls"
+        >
+          <div class="time_filter" id="time_filter">
+            <label class="text-black font-bold" for="start-year"
+              >Choisissez la période à couvrir</label
+            >
+            <div class="grid gap-1 grid-cols-[2fr_3fr_3fr] items-center">
+              <label for="start-year">Début</label>
+              <select class="select select-sm select-bordered" id="start-year">
+                <option value="2019">2019</option>
+                <!-- Plus d'options -->
+              </select>
+              <select class="select select-sm select-bordered" id="start-month">
+                <option value="January">Janvier</option>
+                <!-- Plus d'options -->
+              </select>
+              <label for="end-year">Fin</label>
+              <select class="select select-sm select-bordered" id="end-year">
+                <option value="2024">2024</option>
+                <!-- Plus d'options -->
+              </select>
+              <select class="select select-sm select-bordered" id="end-month">
+                <option value="June">Juin</option>
+                <!-- Plus d'options -->
+              </select>
             </div>
           </div>
+          <div class="time_filter" id="marker_filter">
+            <label class="text-black font-bold" for="marker-start-year"
+              >Définir les marqueurs de variation du nombre
+              d'hyphothèques</label
+            >
+            <div class="grid gap-1 grid-cols-[2fr_3fr_3fr] items-center">
+              <label for="marker-start-year">Marqueur A</label>
+              <select
+                class="select select-sm select-bordered"
+                id="marker-start-year"
+              >
+                <option value="2019">2019</option>
+                <!-- Plus d'options -->
+              </select>
+              <select
+                class="select select-sm select-bordered"
+                id="marker-start-month"
+              >
+                <option value="January">Janvier</option>
+                <!-- Plus d'options -->
+              </select>
+              <label for="marker-end-year">Marqueur B</label>
+              <select
+                class="select select-sm select-bordered"
+                id="marker-end-year"
+              >
+                <option value="2024">2024</option>
+                <!-- Plus d'options -->
+              </select>
+              <select
+                class="select select-sm select-bordered"
+                id="marker-end-month"
+              >
+                <option value="June">Juin</option>
+                <!-- Plus d'options -->
+              </select>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="flex h-full flex-col gap-4 p-4 bg-neutral-400" id="regionStackedArea">
+      <div
+        class="flex h-full flex-col gap-4 p-4 bg-neutral-400"
+        id="regionStackedArea"
+      >
         <div>
           <div>
             <label class="text-white font-bold" for="region-select"
-              >Ajouter une région </label
-            >
+              >Ajouter une région
+            </label>
             <select
               class="select select-sm select-bordered w-full"
               id="region-select"
@@ -114,8 +135,6 @@
         </div>
       </div>
     </div>
-
-    
 
     <script src="index.js"></script>
     <script src="preprocess.js"></script>

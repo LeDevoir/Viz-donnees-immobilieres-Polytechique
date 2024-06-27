@@ -6,16 +6,17 @@
     <title>Le Devoir: Marché immobilier</title>
     <link rel="stylesheet" href="/styles.css" />
     <script src="https://d3js.org/d3.v6.min.js"></script>
+    <link href="./output.css" rel="stylesheet" />
     <link
       href="https://cdn.jsdelivr.net/npm/daisyui@4.12.7/dist/full.min.css"
       rel="stylesheet"
       type="text/css"
     />
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="../output.css" rel="stylesheet" />
   </head>
   <body
     data-theme="light"
-    class="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[135px_1fr]"
+    class="grid min-h-screen h-full w-full md:grid-cols-[220px_1fr] lg:grid-cols-[135px_1fr]"
   >
     <div class="flex h-full flex-col gap-4 p-4 bg-neutral-400">
       <a class="p-2 font-bold btn" href="/">Accueil</a>
@@ -28,7 +29,7 @@
     </div>
 
     <div class="flex flex-col">
-      <h1 class=" text-3xl font-extrabold dark:text-white">Nombre d'achats par gamme de prix</h1>
+      <h1 class="text-lg font-extrabold">Nombre d'achats par gamme de prix</h1>
       <div class="flex-1" id="content"></div>
     </div>
 
