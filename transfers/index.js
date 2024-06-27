@@ -64,7 +64,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     const populateDateSelector = (data, timeUnit) => {
         const dates = Array.from(new Set(data.map(d => timeUnit === "month" ? d.MonthFormatted : d.Year)));
         dateSelector.selectAll("option").remove();
-        dateSelector.append("option").attr("value", "All").text("All");
+        dateSelector.append("option").attr("value", "AA-MM").text("AA-MM");
         dates.forEach(date => {
             dateSelector.append("option").attr("value", date).text(date);
         });
@@ -198,7 +198,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
                         const nbRequests = pivotData[region][time] || 0;
                         tooltip.transition().duration(200).style("opacity", 0.9);
                         tooltip
-                            .html(`Région: ${region}<br>Temps: ${time}<br>Requetes: ${nbRequests}`)
+                            .html(`Région: ${region}<br>Temps: ${time}<br>Requêtes: ${nbRequests}`)
                             .style("left", (event.pageX + 10) + "px")
                             .style("top", (event.pageY - 28) + "px");
                     })
@@ -297,7 +297,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .attr("y", -10)
         .attr("text-anchor", "middle")
         .attr("class", "text-sm font-semibold text-gray-700")
-        .text("Requetes");
+        .text("nombre de Requêtes");
 
     function updateLegend(colorScale) {
         const legendGradient = legendSvg.select("defs linearGradient");
