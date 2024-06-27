@@ -43,7 +43,9 @@
     </div>
 
     <div class="flex flex-col flex-1 bg-gray-100">
-      <h1 class="text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400">Nombre de Requêtes par Région</h1>
+      <h1 class="text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400">
+        Nombre de Requêtes par Région
+      </h1>
       <div class="controls mb-4 flex p-4 items-center justify-center">
         <label for="timeSelector" class="mr-2"
           >Sélectionner l'interval de temps:</label
@@ -58,13 +60,12 @@
         <select id="dateSelector" class="p-2 border rounded-md">
           <option value="Mois-Année">Mois-Année</option>
         </select>
-<label for="regionSelector" class="ml-4 mr-2"
+        <label for="regionSelector" class="ml-4 mr-2"
           >Sélectionner les régions:</label
         >
         <select id="regionSelector" class="p-2 border rounded-md">
           <option value="Tout">Tout</option>
         </select>
-       
       </div>
       <div class="flex justify-center">
         <div id="heatmap" class="w-9/12 place-content-center"></div>
