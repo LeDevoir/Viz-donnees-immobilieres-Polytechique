@@ -144,11 +144,8 @@ document.addEventListener("DOMContentLoaded", function () {
           data.region === regionId &&
           data.year >= selectedStartYear &&
           data.year <= selectedEndYear &&
-          (
-            (data.year === selectedStartYear && data.month >= selectedStartMonth) ||
-            (data.year === selectedEndYear && data.month <= selectedEndMonth) ||
-            (data.year > selectedStartYear && data.year < selectedEndYear)
-          ),
+          data.month >= selectedStartMonth &&
+          data.month <= selectedEndMonth,
       );
 
       d.properties.totalDistressedPeople = dataForRegion.reduce(
@@ -236,7 +233,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const legendSvg = d3
       .select(legendRef)
-            .attr("height", legendContainerHeight);
+      .attr("width", legendContainerWidth)
+      .attr("height", legendContainerHeight);
 
     legendSvg.selectAll("*").remove();
 
@@ -359,16 +357,14 @@ document.addEventListener("DOMContentLoaded", function () {
     monthsInEndYear = getMonthsForYear(selectedEndYear);
 
     // Set default months if not already set
-    if (!selectedStartMonth || monthsInStartYear.indexOf(selectedStartMonth) === -1) {
+    if (
+      !selectedStartMonth ||
+      monthsInStartYear.indexOf(selectedStartMonth) === -1
+    ) {
       selectedStartMonth = monthsInStartYear[0]; // Default to January if available
     }
     if (!selectedEndMonth || monthsInEndYear.indexOf(selectedEndMonth) === -1) {
       selectedEndMonth = monthsInEndYear[0]; // Default to January if available
-    }
-
-    // Ensure end month is not before start month in the same year
-    if (selectedStartYear === selectedEndYear && selectedEndMonth < selectedStartMonth) {
-      selectedEndMonth = selectedStartMonth;
     }
 
     // Update start month select dropdown
@@ -384,10 +380,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     startMonthSelect.on("change", function () {
       selectedStartMonth = +this.value;
-      if (selectedStartYear === selectedEndYear && selectedEndMonth < selectedStartMonth) {
-        selectedEndMonth = selectedStartMonth;
-        d3.select("#endMonthSelect").property("value", selectedEndMonth);
-      }
       drawMap();
     });
 
@@ -404,10 +396,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     endMonthSelect.on("change", function () {
       selectedEndMonth = +this.value;
-      if (selectedStartYear === selectedEndYear && selectedEndMonth < selectedStartMonth) {
-        selectedStartMonth = selectedEndMonth;
-        d3.select("#startMonthSelect").property("value", selectedStartMonth);
-      }
       drawMap();
     });
 
@@ -422,4 +410,3 @@ document.addEventListener("DOMContentLoaded", function () {
 
   loadData();
 });
-
