@@ -45,3 +45,16 @@ body {
     pointer-events: none;
     color: white;
   }
+
+  
+header{
+    justify-content:flex-start;
+    align-items: center;
+    text-align: center;
+    margin-left:25px;
+    margin-top: 60px;
+}
+
+#controls{
+    margin-top: -100px;
+}
