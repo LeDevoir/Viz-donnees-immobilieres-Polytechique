@@ -168,7 +168,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
             selectedRegions = regions;
         }
 
-        if (selectedDate !== "All") {
+        if (selectedDate !== "AA-MM") {
             pivotData = {
                 ...pivotData,
                 ...Object.fromEntries(
@@ -209,7 +209,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         });
     };
 
-    updateHeatmap(pivotData, initialTimeUnit, regions, "All");
+    updateHeatmap(pivotData, initialTimeUnit, regions, "AA-MM");
 
     const colorSelector = d3
         .select("#colorSelector")
