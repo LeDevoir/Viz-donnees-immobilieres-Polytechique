@@ -72,7 +72,7 @@ function updateSelectedRegions(regionIdsWanted, removeRegionCallback) {
 
   regionIdsWanted.forEach((regionId) => {
     const div = document.createElement("div");
-    div.className = "flex p-1 justify-between";
+    div.className = "flex p-1.5 justify-between";
     div.style.backgroundColor = colorMap[regionId];
 
     const span = document.createElement("span");
