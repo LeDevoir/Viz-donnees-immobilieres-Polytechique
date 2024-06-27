@@ -29,7 +29,11 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
 
     const minDate = d3.min(data, d => d.Month);
     const maxDate = d3.max(data, d => d.Month);
-    let zMax = d3.max(data, d => d.NB_REQST);
+    let zMax = d3.max(data, d => d.NB_REQST); 
+
+    // Define a categorical color scale
+    const colorScale = d3.scaleOrdinal(d3.schemeCategory10)
+        .domain(d3.range(0, 10).map(i => i * (zMax / 10)));
 
     const regionSelector = d3.select("#regionSelector");
     regionSelector.selectAll("option").remove();
@@ -62,7 +66,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     const populateDateSelector = (data, timeUnit) => {
         const dates = Array.from(new Set(data.map(d => timeUnit === "month" ? d.MonthFormatted : d.Year)));
         dateSelector.selectAll("option").remove();
-        dateSelector.append("option").attr("value", "année-mois").text("année-mois");
+        dateSelector.append("option").attr("value", "All").text("All");
         dates.forEach(date => {
             dateSelector.append("option").attr("value", date).text(date);
         });
@@ -143,7 +147,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         d3.select(".axis-label")
             .text(xAxisLabel);
         const times = Array.from(new Set(data.map((d) => timeUnit === "month" ? d.MonthFormatted : d.Year)));
-        if (selectedDate !== "année-mois") {
+        if (selectedDate !== "All") {
             x.domain([selectedDate]);
         } else {
             x.domain(times);
@@ -188,7 +192,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
                     .attr("height", y.bandwidth())
                     .attr("rx", 4) // Rounded corners
                     .attr("ry", 4) // Rounded corners
-                    .style("fill", colorScale(pivotData[region][time]))
+                    .style("fill", colorScale(pivotData[region][time] || 0))
                     .style("stroke-width", 2)
                     .style("stroke", "#e2e8f0")
                     .style("opacity", 0.8)
@@ -196,7 +200,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
                         const nbRequests = pivotData[region][time] || 0;
                         tooltip.transition().duration(200).style("opacity", 0.9);
                         tooltip
-                            .html(`Région: ${region}<br>Temps: ${time}<br>requêtes: ${nbRequests}`)
+                            .html(`Région: ${region}<br>Temps: ${time}<br>Requetes: ${nbRequests}`)
                             .style("left", (event.pageX + 10) + "px")
                             .style("top", (event.pageY - 28) + "px");
                     })
@@ -211,16 +215,18 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         const legendGradient = legendSvg.select("defs linearGradient");
         legendGradient.selectAll("stop").remove();
 
-        for (let i = 0; i <= 100; i += 1) {
+        const colorDomain = d3.range(0, zMax, stepSize);
+
+        colorDomain.forEach((d, i) => {
             legendGradient.append("stop")
-                .attr("offset", `${i}%`)
-                .attr("stop-color", colorScale(zMax * i / 100));
-        }
+                .attr("offset", `${(i / colorDomain.length) * 100}%`)
+                .attr("stop-color", colorScale(d));
+        });
 
         legendSvg.selectAll("rect.legend-step").remove();
 
         legendSvg.selectAll("rect.legend-step")
-            .data(d3.range(0, zMax, stepSize))
+            .data(colorDomain)
             .enter()
             .append("rect")
             .attr("class", "legend-step")
@@ -228,13 +234,13 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
             .attr("y", d => legendScale(d + stepSize))
             .attr("width", legendWidth)
             .attr("height", d => legendScale(d) - legendScale(d + stepSize))
-            .attr("fill", d => colorScale(d + stepSize))
+            .attr("fill", d => colorScale(d))
             .on("click", function (event, d) {
                 handleLegendClick(d, d + stepSize);
             });
     };
 
-    updateHeatmap(pivotData, initialTimeUnit, regions, "année-mois");
+    updateHeatmap(pivotData, initialTimeUnit, regions, "All");
 
     const colorSelector = d3
         .select("#colorSelector")
@@ -242,16 +248,14 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .attr("class", "p-2 border rounded-md");
 
     const colorOptions = [
-        { name: "Cool", scale: d3.interpolateCool },
-        { name: "Viridis", scale: d3.interpolateViridis },
-        { name: "Inferno", scale: d3.interpolateInferno },
-        { name: "Magma", scale: d3.interpolateMagma },
-        { name: "Plasma", scale: d3.interpolatePlasma },
-        { name: "Cividis", scale: d3.interpolateCividis },
-        { name: "BuGn", scale: d3.interpolateBuGn },
-        { name: "YlGn", scale: d3.interpolateYlGn },
-        { name: "PuBuGn", scale: d3.interpolatePuBuGn },
-        { name: "PRGn", scale: d3.interpolatePRGn },
+        { name: "Category10", scale: d3.schemeCategory10 },
+        { name: "Category20", scale: d3.schemeCategory20 },
+        { name: "Accent", scale: d3.schemeAccent },
+        { name: "Dark2", scale: d3.schemeDark2 },
+        { name: "Paired", scale: d3.schemePaired },
+        { name: "Set1", scale: d3.schemeSet1 },
+        { name: "Set2", scale: d3.schemeSet2 },
+        { name: "Set3", scale: d3.schemeSet3 },
     ];
 
     colorOptions.forEach((option) => {
@@ -265,9 +269,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         const selectedOption = colorOptions.find(
             (option) => option.name === this.value
         );
-        colorScale = d3
-            .scaleSequential(selectedOption.scale)
-            .domain([0, zMax]);
+        colorScale.range(selectedOption.scale);
         const timeUnit = d3.select("#timeSelector").property("value");
         updateHeatmap(pivotData, timeUnit, regions, dateSelector.property("value"));
         const stepSize = timeUnit === "month" ? 50 : 2000;
@@ -304,11 +306,13 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .attr("y2", "0%")
         .attr("spreadMethod", "pad");
 
-    for (let i = 0; i <= 100; i += 1) {
+    const colorDomain = d3.range(0, zMax, 2000);
+
+    colorDomain.forEach((d, i) => {
         legendGradient.append("stop")
-            .attr("offset", `${i}%`)
-            .attr("stop-color", colorScale(zMax * i / 100));
-    }
+            .attr("offset", `${(i / colorDomain.length) * 100}%`)
+            .attr("stop-color", colorScale(d));
+    });
 
     legendSvg
         .append("rect")
@@ -330,7 +334,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .attr("class", "text-sm font-semibold text-gray-700")
         .text("Requetes");
 
-    updateLegend(colorScale, zMax, 50);
+    updateLegend(colorScale, zMax, 2000);
 
     function handleLegendClick(lowerBound, upperBound) {
         const highlightedData = data.filter(d => d.NB_REQST > lowerBound && d.NB_REQST <= upperBound);
@@ -362,6 +366,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         aggregatedData = aggregateData(data, timeUnit);
         pivotData = createPivotTable(aggregatedData);
         zMax = d3.max(aggregatedData.map(d => d[1]).flatMap(d => d[1]));
+        colorScale.domain([0, zMax]);
         const selectedRegions = Array.from(regionSelector.node().selectedOptions, option => option.value);
         const selectedDate = dateSelector.property("value");
         populateDateSelector(data, timeUnit);
