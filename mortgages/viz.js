@@ -101,8 +101,8 @@ function drawChart(svg, series, xScale, yScale, color, height, width, regionsMap
     .attr("class", "x-axis-label")
     .attr("text-anchor", "middle")
     .attr("x", width / 2)
-    .attr("y", height + 50) // Adjust this value as needed
-    .text("Temps (Mois-Année)");
+    .attr("y", height + 55) // Adjust this value as needed
+    .text("Temps (mois-année)");
 
   // Add y-axis label
   svg
