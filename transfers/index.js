@@ -380,6 +380,9 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     // Update heatmap on time period selection change
     timeSelector.on("change", function () {
         const timeUnit = this.value;
+        if (timeUnit === "year") {
+            dateSelector.property("value", "AA-MM");
+        }
         aggregatedData = aggregateData(data, timeUnit);
         pivotData = createPivotTable(aggregatedData);
         const selectedRegions = Array.from(regionSelector.node().selectedOptions, option => option.value);
