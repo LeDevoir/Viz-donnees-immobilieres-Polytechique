@@ -164,14 +164,14 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
                     .attr("height", y.bandwidth())
                     .attr("rx", 4) // Rounded corners
                     .attr("ry", 4) // Rounded corners
-                    .style("fill", color(pivotData[region][time] || 0))
+                    .style("fill", color(pivotData[region][time]))
                     .style("stroke-width", 2)
                     .style("stroke", "#e2e8f0")
                     .style("opacity", 0.8)
                     .on("mouseover", function (event, d) {
                         tooltip.transition().duration(200).style("opacity", 0.9);
                         tooltip
-                            .html(`Région: ${region}<br>Temps: ${time}<br>Requetes: ${pivotData[region][time] || 0}`)
+                            .html(`Région: ${region}<br>Temps: ${time}<br>Requetes: ${pivotData[region][time] }`)
                             .style("left", (event.pageX + 10) + "px")
                             .style("top", (event.pageY - 28) + "px");
                     })
