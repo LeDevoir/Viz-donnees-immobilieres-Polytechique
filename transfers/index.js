@@ -1,4 +1,4 @@
-d3.csv('donn_transf_prop_reqst.csv').then((data) => {
+d3.csv('data/data.csv').then((data) => {
     const initialTimeUnit = d3.select("#timeSelector").property("value");
     const regionNames = {
         1: "Bas-Saint-Laurent",
@@ -308,12 +308,11 @@ legendGradient.selectAll("stop")
             .attr("offset", (d) => d.offset)
             .attr("stop-color", (d) => d.color);
     }
-        function updateGradient(data) {
-       
-        let zMaxq = d3.max(data, d => d.NB_REQST); 
-        colorScale.domain([0, zMax]); 
 
-        
+    function updateGradient(data) {
+        let zMaxq = d3.max(data, d => d.NB_REQST); 
+        colorScale.domain([0, zMaxq]); 
+
         const gradient = legendSvg.select("defs")
             .select("linearGradient")
             .selectAll("stop")
@@ -328,24 +327,44 @@ legendGradient.selectAll("stop")
             .attr("stop-opacity", d => d.opacity);
     }
 
-    
-  regionSelector
+    regionSelector
         .append("option")
         .attr("value", "Tout")
         .text("Tout");
-   
 
-regionSelector.selectAll(null)
+    regionSelector.selectAll(null)
         .data(regions)
         .enter()
         .append("option")
         .attr("value", d => d)
         .text(d => d);
-       
 
-    // Add the "All" option for region selection
-    
+    // Toggle function for legend interaction
+    function toggleLegend(legend) {
+        const { lowerBound, upperBound, selected } = legend;
 
+        legend.selected = !selected;
+
+        const highlightedData = data.map(d => ({
+            ...d,
+            highlight: d.NB_REQST > lowerBound && d.NB_REQST <= upperBound && legend.selected
+        }));
+
+        updateHeatmap(pivotData, d3.select("#timeSelector").property("value"), regionSelector.property("value"));
+    }
+
+    // Add interactivity to the legend
+    legendSvg.selectAll("rect")
+        .on("click", function() {
+            const index = d3.select(this).attr("index");
+            const bounds = colorScale.invertExtent(colorScale(index / 100));
+            toggleLegend({
+                lowerBound: bounds[0],
+                upperBound: bounds[1],
+                selected: d3.select(this).classed("selected")
+            });
+            d3.select(this).classed("selected", !d3.select(this).classed("selected"));
+        });
 
     const filterDataByDate = (data, startDate, endDate) => {
         return data.filter(d => {
@@ -384,5 +403,5 @@ regionSelector.selectAll(null)
         const selectedRegions = Array.from(regionSelector.node().selectedOptions, option => option.value);
         updateHeatmap(pivotData, timeUnit, selectedRegions);
         updateGradient(data); 
-  });
+    });
 });
