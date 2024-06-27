@@ -55,6 +55,11 @@ header{
     margin-top: 60px;
 }
 
+h1{
+    align-items: center;
+    text-align: center;
+}
+
 #controls{
     margin-top: -100px;
 }

@@ -290,7 +290,7 @@ document.addEventListener("DOMContentLoaded", function () {
       .attr("text-anchor", "middle")
       .attr("class", "mb-2")
       .style("font-size", "12px")
-      .text("Nombre total de détresse financière");
+      .text("Nombre total de détresses financières");
 
     legendSvg
       .append("text")
