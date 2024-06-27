@@ -29,9 +29,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
 
     const minDate = d3.min(data, d => d.Month);
     const maxDate = d3.max(data, d => d.Month);
-    let zMax = 50000; 
-    let colorScale = d3.scaleSequential(d3.interpolateViridis)
-        .domain([0, zMax]);
+    let zMax = d3.max(data, d => d.NB_REQST);
 
     const regionSelector = d3.select("#regionSelector");
     regionSelector.selectAll("option").remove();
@@ -64,7 +62,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     const populateDateSelector = (data, timeUnit) => {
         const dates = Array.from(new Set(data.map(d => timeUnit === "month" ? d.MonthFormatted : d.Year)));
         dateSelector.selectAll("option").remove();
-        dateSelector.append("option").attr("value", "All").text("All");
+        dateSelector.append("option").attr("value", "année-mois").text("année-mois");
         dates.forEach(date => {
             dateSelector.append("option").attr("value", date).text(date);
         });
@@ -145,7 +143,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         d3.select(".axis-label")
             .text(xAxisLabel);
         const times = Array.from(new Set(data.map((d) => timeUnit === "month" ? d.MonthFormatted : d.Year)));
-        if (selectedDate !== "All") {
+        if (selectedDate !== "année-mois") {
             x.domain([selectedDate]);
         } else {
             x.domain(times);
@@ -198,7 +196,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
                         const nbRequests = pivotData[region][time] || 0;
                         tooltip.transition().duration(200).style("opacity", 0.9);
                         tooltip
-                            .html(`Région: ${region}<br>Temps: ${time}<br>Requetes: ${nbRequests}`)
+                            .html(`Région: ${region}<br>Temps: ${time}<br>requêtes: ${nbRequests}`)
                             .style("left", (event.pageX + 10) + "px")
                             .style("top", (event.pageY - 28) + "px");
                     })
@@ -209,7 +207,34 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         });
     };
 
-    updateHeatmap(pivotData, initialTimeUnit, regions, "All");
+    const updateLegend = (colorScale, zMax, stepSize) => {
+        const legendGradient = legendSvg.select("defs linearGradient");
+        legendGradient.selectAll("stop").remove();
+
+        for (let i = 0; i <= 100; i += 1) {
+            legendGradient.append("stop")
+                .attr("offset", `${i}%`)
+                .attr("stop-color", colorScale(zMax * i / 100));
+        }
+
+        legendSvg.selectAll("rect.legend-step").remove();
+
+        legendSvg.selectAll("rect.legend-step")
+            .data(d3.range(0, zMax, stepSize))
+            .enter()
+            .append("rect")
+            .attr("class", "legend-step")
+            .attr("x", 0)
+            .attr("y", d => legendScale(d + stepSize))
+            .attr("width", legendWidth)
+            .attr("height", d => legendScale(d) - legendScale(d + stepSize))
+            .attr("fill", d => colorScale(d + stepSize))
+            .on("click", function (event, d) {
+                handleLegendClick(d, d + stepSize);
+            });
+    };
+
+    updateHeatmap(pivotData, initialTimeUnit, regions, "année-mois");
 
     const colorSelector = d3
         .select("#colorSelector")
@@ -223,6 +248,10 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         { name: "Magma", scale: d3.interpolateMagma },
         { name: "Plasma", scale: d3.interpolatePlasma },
         { name: "Cividis", scale: d3.interpolateCividis },
+        { name: "BuGn", scale: d3.interpolateBuGn },
+        { name: "YlGn", scale: d3.interpolateYlGn },
+        { name: "PuBuGn", scale: d3.interpolatePuBuGn },
+        { name: "PRGn", scale: d3.interpolatePRGn },
     ];
 
     colorOptions.forEach((option) => {
@@ -239,8 +268,10 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         colorScale = d3
             .scaleSequential(selectedOption.scale)
             .domain([0, zMax]);
-        updateHeatmap(pivotData, d3.select("#timeSelector").property("value"), regions, dateSelector.property("value"));
-        updateLegend(colorScale);
+        const timeUnit = d3.select("#timeSelector").property("value");
+        updateHeatmap(pivotData, timeUnit, regions, dateSelector.property("value"));
+        const stepSize = timeUnit === "month" ? 50 : 2000;
+        updateLegend(colorScale, zMax, stepSize);
     });
 
     const legendWidth = 60,
@@ -299,43 +330,8 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .attr("class", "text-sm font-semibold text-gray-700")
         .text("Requetes");
 
-    function updateLegend(colorScale) {
-        const legendGradient = legendSvg.select("defs linearGradient");
-        legendGradient.selectAll("stop").remove();
+    updateLegend(colorScale, zMax, 50);
 
-        for (let i = 0; i <= 100; i += 1) {
-            legendGradient.append("stop")
-                .attr("offset", `${i}%`)
-                .attr("stop-color", colorScale(zMax * i / 100));
-        }
-    }
-
-    function updateGradient(data) {
-        let zMaxq = 50000;
-        colorScale.domain([0, zMaxq]);
-
-        const gradient = legendSvg.select("defs")
-            .select("linearGradient")
-            .selectAll("stop")
-            .data(d3.range(0, 101).map(i => ({ offset: `${i}%`, color: colorScale(zMaxq * i / 100) })))
-            .join("stop")
-            .attr("offset", d => d.offset)
-            .attr("stop-color", d => d.color);
-    }
-
-    regionSelector
-        .append("option")
-        .attr("value", "Tout")
-        .text("Tout");
-
-    regionSelector.selectAll(null)
-        .data(regions)
-        .enter()
-        .append("option")
-        .attr("value", d => d)
-        .text(d => d);
-
-    // Create a function to handle legend click
     function handleLegendClick(lowerBound, upperBound) {
         const highlightedData = data.filter(d => d.NB_REQST > lowerBound && d.NB_REQST <= upperBound);
         
@@ -350,31 +346,14 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
             .attr("fill", d => colorScale(d.NB_REQST));
     }
 
-    // Add interactivity to the legend
-    const legendSteps = 50; // Number of steps in the legend
-    const stepSize = zMax / legendSteps; // Size of each step
-
-    legendSvg.selectAll("rect.legend-step")
-        .data(d3.range(0, zMax, stepSize))
-        .enter()
-        .append("rect")
-        .attr("class", "legend-step")
-        .attr("x", 0)
-        .attr("y", d => legendScale(d + stepSize))
-        .attr("width", legendWidth)
-        .attr("height", d => legendScale(d) - legendScale(d + stepSize))
-        .attr("fill", d => colorScale(d + stepSize))
-        .on("click", function (event, d) {
-            handleLegendClick(d, d + stepSize);
-        });
-
     // Update heatmap on region selection change
     regionSelector.on("change", function () {
         const selectedRegions = Array.from(this.selectedOptions, option => option.value);
         const selectedTimeUnit = timeSelector.property("value");
         const selectedDate = dateSelector.property("value");
         updateHeatmap(pivotData, selectedTimeUnit, selectedRegions, selectedDate);
-        updateGradient(data);
+        const stepSize = selectedTimeUnit === "month" ? 50 : 2000;
+        updateLegend(colorScale, zMax, stepSize);
     });
 
     // Update heatmap on time period selection change
@@ -382,11 +361,13 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         const timeUnit = this.value;
         aggregatedData = aggregateData(data, timeUnit);
         pivotData = createPivotTable(aggregatedData);
+        zMax = d3.max(aggregatedData.map(d => d[1]).flatMap(d => d[1]));
         const selectedRegions = Array.from(regionSelector.node().selectedOptions, option => option.value);
         const selectedDate = dateSelector.property("value");
         populateDateSelector(data, timeUnit);
         updateHeatmap(pivotData, timeUnit, selectedRegions, selectedDate);
-        updateGradient(data);
+        const stepSize = timeUnit === "month" ? 50 : 2000;
+        updateLegend(colorScale, zMax, stepSize);
     });
 
     dateSelector.on("change", function () {
@@ -394,7 +375,8 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         const selectedTimeUnit = timeSelector.property("value");
         const selectedDate = this.value;
         updateHeatmap(pivotData, selectedTimeUnit, selectedRegions, selectedDate);
-        updateGradient(data);
+        const stepSize = selectedTimeUnit === "month" ? 50 : 2000;
+        updateLegend(colorScale, zMax, stepSize);
     });
 
     // Initial population of date selector
