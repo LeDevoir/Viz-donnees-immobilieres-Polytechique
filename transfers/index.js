@@ -64,7 +64,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     const populateDateSelector = (data, timeUnit) => {
         const dates = Array.from(new Set(data.map(d => timeUnit === "month" ? d.MonthFormatted : d.Year)));
         dateSelector.selectAll("option").remove();
-        dateSelector.append("option").attr("value", "mois-année").text("mois-année");
+        dateSelector.append("option").attr("value", "All").text("All");
         dates.forEach(date => {
             dateSelector.append("option").attr("value", date).text(date);
         });
@@ -197,9 +197,10 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
                     .style("stroke", "#e2e8f0")
                     .style("opacity", 0.8)
                     .on("mouseover", function (event, d) {
+                        const nbRequests = pivotData[region][time] || 0;
                         tooltip.transition().duration(200).style("opacity", 0.9);
                         tooltip
-                            .html(`Région: ${region}<br>Temps: ${time}<br>Requetes: ${pivotData[region][time] || 0}`)
+                            .html(`Région: ${region}<br>Temps: ${time}<br>Requetes: ${nbRequests}`)
                             .style("left", (event.pageX + 10) + "px")
                             .style("top", (event.pageY - 28) + "px");
                     })
