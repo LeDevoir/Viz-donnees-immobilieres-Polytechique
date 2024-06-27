@@ -1,4 +1,4 @@
-d3.csv('donn_transf_prop_reqst.csv').then((data) => {
+d3.csv('data/data.csv').then((data) => {
     const regionNames = {
         1: "Bas-Saint-Laurent",
         2: "Saguenay-Lac-Saint-Jean",
@@ -32,14 +32,14 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     let zMax = d3.max(data, d => d.NB_REQST); 
     let colorScale = d3.scaleSequential(d3.interpolateViridis)
         .domain([0, zMax]);
-    d3.select("#startDate").attr("min", d3.timeFormat("%Y-%m-%d")(minDate)).attr("max", d3.timeFormat("%Y-%m-%d")(maxDate));
-    d3.select("#endDate").attr("min", d3.timeFormat("%Y-%m-%d")(minDate)).attr("max", d3.timeFormat("%Y-%m-%d")(maxDate));
-    
+
     const regionSelector = d3.select("#regionSelector");
     regionSelector.selectAll("option").remove();
 
     const timeSelector = d3.select("#timeSelector");
     const dateSelector = d3.select("#dateSelector");
+
+    const initialTimeUnit = timeSelector.property("value");
 
     const aggregateData = (data, timeUnit) => {
         return d3.rollups(
@@ -70,7 +70,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         });
     };
 
-    let aggregatedData = aggregateData(data, "month");
+    let aggregatedData = aggregateData(data, initialTimeUnit);
     let pivotData = createPivotTable(aggregatedData);
 
     const margin = { top: 50, right: 100, bottom: 150, left: 145 };
@@ -206,7 +206,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         });
     };
 
-    updateHeatmap(pivotData, "month", regions, "All");
+    updateHeatmap(pivotData, initialTimeUnit, regions, "All");
 
     const colorSelector = d3
         .select("#colorSelector")
