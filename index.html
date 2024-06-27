@@ -1,23 +1,38 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Outil de visualisation de données immobilières pour Le Devoir."
+    />
+    <meta
+      name="keywords"
+      content="immobilier, visualisation de données, Le Devoir, Polytechnique Montréal"
+    />
+    <meta
+      name="author"
+      content="George Salib, Zakaria Sbai-Chkirid, Khalil Beddouch, Nassim Boughedaoui, Abderahim Laribi, Artour Benevolenski"
+    />
     <title>Le Devoir: Marché immobilier</title>
     <link rel="stylesheet" href="styles.css" />
-    <script src="https://d3js.org/d3.v6.min.js"></script>
     <link
       href="https://cdn.jsdelivr.net/npm/daisyui@4.12.7/dist/full.min.css"
       rel="stylesheet"
       type="text/css"
     />
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://d3js.org/d3.v6.min.js" defer></script>
   </head>
   <body
     data-theme="light"
     class="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[135px_1fr]"
   >
-    <div class="flex h-full flex-col gap-4 p-4 bg-neutral-400">
+    <nav
+      class="flex h-full flex-col gap-4 p-4 bg-neutral-400"
+      aria-label="Main Navigation"
+    >
       <a class="p-2 font-bold btn btn-neutral" href="/">Acceuil</a>
       <a class="p-2 font-bold btn" href="/transfers">Transferts</a>
       <a class="p-2 font-bold btn" href="/sales">Ventes</a>
@@ -25,9 +40,9 @@
         >Difficultés financières</a
       >
       <a class="p-2 font-bold btn" href="/mortgages">Hypothèques</a>
-    </div>
-    <div class="flex-1 flex flex-col gap-2 p-4" id="content">
-      <h1 class="text-lg font-bold">
+    </nav>
+    <main class="flex-1 flex flex-col gap-4 p-4" id="content">
+      <h1 class="text-xl font-bold">
         Bienvenue sur la page web de notre outil de visualisation de données
         immobilières!
       </h1>
@@ -45,6 +60,97 @@
         transferts de propriétés, le nombre d'hypothèques, le nombre de
         faillites et bien d'autres.
       </p>
-    </div>
+      <div class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+        <div class="bg-white shadow-md p-4 rounded-lg flex flex-col">
+          <h2 class="text-xl font-bold mb-2 text-center">Transferts</h2>
+          <img
+            src="assets/transfers.png"
+            alt="Transferts Image"
+            class="w-full h-32 object-cover rounded-lg"
+          />
+          <p class="text-sm">
+            Découvrez les détails des transferts de propriétés dans différentes
+            régions.
+          </p>
+          <ul class="list-disc pl-5 flex-grow text-sm">
+            <li>
+              Carte thermique représentant le nombre de requêtes pour un
+              transfert de propriété selon la région, le mois et l'année
+            </li>
+            <li>Filtre permettant une vue mensuelle ou annuelle</li>
+            <li>Légende pour le nombre de requêtes</li>
+            <li>
+              Infobulles contenant la région, l'année et le nombre de requêtes
+            </li>
+          </ul>
+          <a href="/transfers" class="btn btn-primary mt-2 self-end"
+            >Voir plus</a
+          >
+        </div>
+        <div class="bg-white shadow-md p-4 rounded-lg flex flex-col">
+          <h2 class="text-xl font-bold mb-2 text-center">Ventes</h2>
+          <img
+            src="assets/sales.png"
+            alt="Ventes Image"
+            class="w-full h-32 object-cover rounded-lg"
+          />
+          <p class="text-sm">
+            Analysez le nombre de ventes immobilières selon le nombre d'achats
+            par gamme de prix
+          </p>
+          <ul class="list-disc pl-5 flex-grow text-sm">
+            <li>
+              Graphique à barres empilées représentant le nombre d'achats par
+              gamme de prix pour chaque région
+            </li>
+            <li>Légende cliquable pour afficher ou cacher chaque gamme de prix</li>
+            <li>Infobulles contenant le nom de la région et le nombre d'achats pour chaque gamme de prix</li>
+          </ul>
+          <a href="/sales" class="btn btn-primary mt-2 self-end">Voir plus</a>
+        </div>
+        <div class="bg-white shadow-md p-4 rounded-lg flex flex-col">
+          <h2 class="text-xl font-bold mb-2 text-center">
+            Difficultés financières
+          </h2>
+          <img
+            src="assets/difficulties.png"
+            alt="Difficultés financières Image"
+            class="w-full h-32 object-contain rounded-lg"
+          />
+          <p class="text-sm">
+            Explorez les données sur les difficultés financières des
+            propriétaires.
+          </p>
+          <ul class="list-disc pl-5 flex-grow text-sm">
+            <li>Carte choroplèthe représentant les détresse financières des régions selon un intervalle de temps sélectionné</li>
+            <li>Légende indiquant si le nombre total de détresses financières est faible ou élevé </li>
+            <li>Infobulles contenant le nombre de détresses (avis de vente, faillites, hypothèques construction, préavis et saisies)</li>
+          </ul>
+          <a href="/difficulties" class="btn btn-primary mt-2 self-end"
+            >Voir plus</a
+          >
+        </div>
+        <div class="bg-white shadow-md p-4 rounded-lg flex flex-col">
+          <h2 class="text-xl font-bold mb-2 text-center">Hypothèques</h2>
+          <img
+            src="assets/mortgages.png"
+            alt="Hypothèques Image"
+            class="w-full h-32 object-cover rounded-lg"
+          />
+          <p class="text-sm">
+            Obtenez des informations sur les hypothèques et leur évolution au
+            fil du temps
+          </p>
+          <ul class="list-disc pl-5 flex-grow text-sm">
+            <li>Graphique en aires empilées représentant le nombre d'hypothèques selon le mois pour chacune des régions</li>
+            <li>Filtres pour choisir les régions et la période à couvrir</li>
+            <li>Marqueurs et pente pour réprésenter visuellement la variation nette du volume des hypothèques durant une période</li>
+          </ul>
+          <a href="/mortgages" class="btn btn-primary mt-2 self-end"
+            >Voir plus</a
+          >
+        </div>
+      </div>
+    </main>
   </body>
 </html>
