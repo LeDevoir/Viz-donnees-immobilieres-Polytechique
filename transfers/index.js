@@ -297,7 +297,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .attr("y", -10)
         .attr("text-anchor", "middle")
         .attr("class", "text-sm font-semibold text-gray-700")
-        .text("nombre de Requêtes");
+        .text("Requêtes");
 
     function updateLegend(colorScale) {
         const legendGradient = legendSvg.select("defs linearGradient");
