@@ -135,10 +135,8 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     const tooltip = d3
         .select("body")
         .append("div")
-        .attr("class", "tooltip p-2 bg-white border rounded-md shadow-lg")
-        .style("opacity", 0)
-        .style("position", "absolute")
-        .style("pointer-events", "none");
+        .attr("class", "tooltip")
+        .style("opacity", 0);
 
     const updateHeatmap = (pivotData, timeUnit, selectedRegions, selectedDate) => {
         const xAxisLabel = timeUnit === "month" ? "Mois" : "Année";
