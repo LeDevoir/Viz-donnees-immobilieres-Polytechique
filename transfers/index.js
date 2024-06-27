@@ -356,10 +356,11 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     const legendSteps = 10; // Number of steps in the legend
     const stepSize = zMax / legendSteps; // Size of each step
 
-    legendSvg.selectAll("rect")
+    legendSvg.selectAll("rect.legend-step")
         .data(d3.range(0, zMax, stepSize))
         .enter()
         .append("rect")
+        .attr("class", "legend-step")
         .attr("x", 0)
         .attr("y", d => legendScale(d + stepSize))
         .attr("width", legendWidth)
