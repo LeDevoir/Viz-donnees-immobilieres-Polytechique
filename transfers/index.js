@@ -1,4 +1,4 @@
-d3.csv('data/data.csv').then((data) => {
+d3.csv('donn_transfers_prop_reqst.csv').then((data) => {
     const initialTimeUnit = d3.select("#timeSelector").property("value");
     const regionNames = {
         1: "Bas-Saint-Laurent",
