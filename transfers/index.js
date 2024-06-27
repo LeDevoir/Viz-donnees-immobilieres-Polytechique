@@ -383,6 +383,9 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         if (timeUnit === "year") {
             dateSelector.property("value", "AA-MM");
         }
+         if (timeUnit === "month") {
+            dateSelector.property("value", "AA-MM");
+        }
         aggregatedData = aggregateData(data, timeUnit);
         pivotData = createPivotTable(aggregatedData);
         const selectedRegions = Array.from(regionSelector.node().selectedOptions, option => option.value);
