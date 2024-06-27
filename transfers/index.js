@@ -1,4 +1,4 @@
-d3.csv('donn_transf_prop_reqst.csv').then((data) => {
+d3.csv('data/data.csv').then((data) => {
     const initialTimeUnit = d3.select("#timeSelector").property("value");
     const regionNames = {
         1: "Bas-Saint-Laurent",
@@ -343,10 +343,10 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
 
     // Create a function to handle legend click
     function handleLegendClick(lowerBound, upperBound) {
-        const highlightedDates = data.filter(d => d.NB_REQST > lowerBound && d.NB_REQST <= upperBound);
+        const highlightedData = data.filter(d => d.NB_REQST > lowerBound && d.NB_REQST <= upperBound);
 
         svg.selectAll("rect")
-            .data(highlightedDates, d => d.Region + d.MonthFormatted)
+            .data(highlightedData, d => `${d.Region}-${d.MonthFormatted}`)
             .transition()
             .duration(500)
             .attr("fill", d => colorScale(d.NB_REQST));
