@@ -1,5 +1,4 @@
 d3.csv('donn_transf_prop_reqst.csv').then((data) => {
-    const initialTimeUnit = d3.select("#timeSelector").property("value");
     const regionNames = {
         1: "Bas-Saint-Laurent",
         2: "Saguenay-Lac-Saint-Jean",
@@ -37,7 +36,11 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     d3.select("#endDate").attr("min", d3.timeFormat("%Y-%m-%d")(minDate)).attr("max", d3.timeFormat("%Y-%m-%d")(maxDate));
     
     const regionSelector = d3.select("#regionSelector");
-    regionSelector.selectAll("option").remove(); 
+    regionSelector.selectAll("option").remove();
+
+    const timeSelector = d3.select("#timeSelector");
+    const dateSelector = d3.select("#dateSelector");
+
     const aggregateData = (data, timeUnit) => {
         return d3.rollups(
             data,
@@ -56,6 +59,15 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
             });
         });
         return pivotData;
+    };
+
+    const populateDateSelector = (data, timeUnit) => {
+        const dates = Array.from(new Set(data.map(d => timeUnit === "month" ? d.MonthFormatted : d.Year)));
+        dateSelector.selectAll("option").remove();
+        dateSelector.append("option").attr("value", "All").text("All");
+        dates.forEach(date => {
+            dateSelector.append("option").attr("value", date).text(date);
+        });
     };
 
     let aggregatedData = aggregateData(data, "month");
@@ -128,7 +140,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .style("position", "absolute")
         .style("pointer-events", "none");
 
-    const updateHeatmap = (pivotData, timeUnit, selectedRegions) => {
+    const updateHeatmap = (pivotData, timeUnit, selectedRegions, selectedDate) => {
         const xAxisLabel = timeUnit === "month" ? "Mois" : "Année";
 
         // Update the text of the X-axis label
@@ -154,6 +166,18 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
             selectedRegions = regions;
         }
 
+        if (selectedDate !== "All") {
+            pivotData = {
+                ...pivotData,
+                ...Object.fromEntries(
+                    Object.entries(pivotData).map(([region, timeData]) => [
+                        region,
+                        { [selectedDate]: timeData[selectedDate] },
+                    ])
+                ),
+            };
+        }
+
         selectedRegions.forEach((region) => {
             x.domain().forEach((time) => {
                 svg
@@ -164,14 +188,14 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
                     .attr("height", y.bandwidth())
                     .attr("rx", 4) // Rounded corners
                     .attr("ry", 4) // Rounded corners
-                    .style("fill", color(pivotData[region][time]))
+                    .style("fill", color(pivotData[region][time] || 0))
                     .style("stroke-width", 2)
                     .style("stroke", "#e2e8f0")
                     .style("opacity", 0.8)
                     .on("mouseover", function (event, d) {
                         tooltip.transition().duration(200).style("opacity", 0.9);
                         tooltip
-                            .html(`Région: ${region}<br>Temps: ${time}<br>Requetes: ${pivotData[region][time] }`)
+                            .html(`Région: ${region}<br>Temps: ${time}<br>Requetes: ${pivotData[region][time] || 0}`)
                             .style("left", (event.pageX + 10) + "px")
                             .style("top", (event.pageY - 28) + "px");
                     })
@@ -182,7 +206,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         });
     };
 
-    updateHeatmap(pivotData, "month", regions);
+    updateHeatmap(pivotData, "month", regions, "All");
 
     const colorSelector = d3
         .select("#colorSelector")
@@ -212,7 +236,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         colorScale = d3
             .scaleSequential(selectedOption.scale)
             .domain([0, zMax]);
-        updateHeatmap(pivotData, d3.select("#timeSelector").property("value"), regions);
+        updateHeatmap(pivotData, d3.select("#timeSelector").property("value"), regions, dateSelector.property("value"));
         updateLegend(colorScale);
     });
 
@@ -338,41 +362,35 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
             handleLegendClick(d, d + stepSize);
         });
 
-    const filterDataByDate = (data, startDate, endDate) => {
-        return data.filter(d => {
-            const date = new Date(d.DT_DEBUT_MOIS);
-            return (!startDate || date >= startDate) && (!endDate || date <= endDate);
-        });
-    };
-
     // Update heatmap on region selection change
     regionSelector.on("change", function () {
         const selectedRegions = Array.from(this.selectedOptions, option => option.value);
-        const selectedTimeUnit = d3.select(this).property("value");
-        d3.select(".axis-label").text(getAxisLabel(selectedTimeUnit));
-        updateHeatmap(pivotData, d3.select("#timeSelector").property("value"), selectedRegions);
+        const selectedTimeUnit = timeSelector.property("value");
+        const selectedDate = dateSelector.property("value");
+        updateHeatmap(pivotData, selectedTimeUnit, selectedRegions, selectedDate);
         updateGradient(data);
     });
 
     // Update heatmap on time period selection change
-    d3.select("#timeSelector").on("change", function () {
+    timeSelector.on("change", function () {
         const timeUnit = this.value;
         aggregatedData = aggregateData(data, timeUnit);
         pivotData = createPivotTable(aggregatedData);
         const selectedRegions = Array.from(regionSelector.node().selectedOptions, option => option.value);
-        updateHeatmap(pivotData, timeUnit, selectedRegions);
+        const selectedDate = dateSelector.property("value");
+        populateDateSelector(data, timeUnit);
+        updateHeatmap(pivotData, timeUnit, selectedRegions, selectedDate);
         updateGradient(data);
     });
 
-    d3.select("#applyFilters").on("click", function () {
-        const startDate = new Date(d3.select("#startDate").property("value"));
-        const endDate = new Date(d3.select("#endDate").property("value"));
-        const filteredData = filterDataByDate(data, startDate, endDate);
-        const timeUnit = d3.select("#timeSelector").property("value");
-        aggregatedData = aggregateData(filteredData, timeUnit);
-        pivotData = createPivotTable(aggregatedData);
+    dateSelector.on("change", function () {
         const selectedRegions = Array.from(regionSelector.node().selectedOptions, option => option.value);
-        updateHeatmap(pivotData, timeUnit, selectedRegions);
+        const selectedTimeUnit = timeSelector.property("value");
+        const selectedDate = this.value;
+        updateHeatmap(pivotData, selectedTimeUnit, selectedRegions, selectedDate);
         updateGradient(data);
     });
+
+    // Initial population of date selector
+    populateDateSelector(data, initialTimeUnit);
 });
