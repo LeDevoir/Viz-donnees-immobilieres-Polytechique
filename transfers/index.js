@@ -64,7 +64,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     const populateDateSelector = (data, timeUnit) => {
         const dates = Array.from(new Set(data.map(d => timeUnit === "month" ? d.MonthFormatted : d.Year)));
         dateSelector.selectAll("option").remove();
-        dateSelector.append("option").attr("value", "All").text("All");
+        dateSelector.append("option").attr("value", "mois-année").text("mois-année");
         dates.forEach(date => {
             dateSelector.append("option").attr("value", date).text(date);
         });
