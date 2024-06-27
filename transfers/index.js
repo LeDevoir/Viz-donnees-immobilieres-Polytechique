@@ -344,6 +344,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     // Create a function to handle legend click
     function handleLegendClick(lowerBound, upperBound) {
         const highlightedData = data.filter(d => d.NB_REQST > lowerBound && d.NB_REQST <= upperBound);
+        console.log("Highlighted Data: ", highlightedData);
 
         svg.selectAll("rect")
             .data(highlightedData, d => `${d.Region}-${d.MonthFormatted}`)
