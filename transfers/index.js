@@ -188,7 +188,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
                     .attr("height", y.bandwidth())
                     .attr("rx", 4) // Rounded corners
                     .attr("ry", 4) // Rounded corners
-                    .style("fill", colorScale(pivotData[region][time] || 0))
+                    .style("fill", colorScale(pivotData[region][time]))
                     .style("stroke-width", 2)
                     .style("stroke", "#e2e8f0")
                     .style("opacity", 0.8)
