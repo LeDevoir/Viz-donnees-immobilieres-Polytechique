@@ -195,7 +195,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
                     .on("mouseover", function (event, d) {
                         tooltip.transition().duration(200).style("opacity", 0.9);
                         tooltip
-                            .html(`Région: ${region}<br>Temps: ${time}<br>Requetes: ${pivotData[region][time] || 0}`)
+                            .html(`Région: ${region}<br>Temps: ${time}<br>Requetes: ${pivotData[region][time] }`)
                             .style("left", (event.pageX + 10) + "px")
                             .style("top", (event.pageY - 28) + "px");
                     })
@@ -206,7 +206,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         });
     };
 
-    updateHeatmap(pivotData, initialTimeUnit, regions, "All");
+    updateHeatmap(pivotData, initialTimeUnit, regions, "Tout");
 
     const colorSelector = d3
         .select("#colorSelector")
