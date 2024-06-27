@@ -30,8 +30,9 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     const minDate = d3.min(data, d => d.Month);
     const maxDate = d3.max(data, d => d.Month);
     let zMax = d3.max(data, d => d.NB_REQST); 
-    let colorScale = d3.scaleSequential(d3.interpolateViridis)
-        .domain([0, zMax]);
+
+    // Define a categorical color scale
+    let colorScale = d3.scaleOrdinal(d3.schemeCategory10);
 
     const regionSelector = d3.select("#regionSelector");
     regionSelector.selectAll("option").remove();
@@ -168,7 +169,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
             selectedRegions = regions;
         }
 
-        if (selectedDate !== "Année-Mois") {
+        if (selectedDate !== "All") {
             pivotData = {
                 ...pivotData,
                 ...Object.fromEntries(
@@ -198,7 +199,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
                         const nbRequests = pivotData[region][time] || 0;
                         tooltip.transition().duration(200).style("opacity", 0.9);
                         tooltip
-                            .html(`Région: ${region}<br>Temps: ${time}<br>requêtes: ${nbRequests}`)
+                            .html(`Région: ${region}<br>Temps: ${time}<br>Requetes: ${nbRequests}`)
                             .style("left", (event.pageX + 10) + "px")
                             .style("top", (event.pageY - 28) + "px");
                     })
@@ -209,7 +210,36 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         });
     };
 
-    updateHeatmap(pivotData, initialTimeUnit, regions, "Année-Mois");
+    const updateLegend = (colorScale, zMax, stepSize) => {
+        const legendGradient = legendSvg.select("defs linearGradient");
+        legendGradient.selectAll("stop").remove();
+
+        const colorDomain = d3.range(0, zMax, stepSize);
+
+        colorDomain.forEach((d, i) => {
+            legendGradient.append("stop")
+                .attr("offset", `${(i / colorDomain.length) * 100}%`)
+                .attr("stop-color", colorScale(d));
+        });
+
+        legendSvg.selectAll("rect.legend-step").remove();
+
+        legendSvg.selectAll("rect.legend-step")
+            .data(colorDomain)
+            .enter()
+            .append("rect")
+            .attr("class", "legend-step")
+            .attr("x", 0)
+            .attr("y", d => legendScale(d + stepSize))
+            .attr("width", legendWidth)
+            .attr("height", d => legendScale(d) - legendScale(d + stepSize))
+            .attr("fill", d => colorScale(d))
+            .on("click", function (event, d) {
+                handleLegendClick(d, d + stepSize);
+            });
+    };
+
+    updateHeatmap(pivotData, initialTimeUnit, regions, "All");
 
     const colorSelector = d3
         .select("#colorSelector")
@@ -217,12 +247,14 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .attr("class", "p-2 border rounded-md");
 
     const colorOptions = [
-        { name: "Cool", scale: d3.interpolateCool },
-        { name: "Viridis", scale: d3.interpolateViridis },
-        { name: "Inferno", scale: d3.interpolateInferno },
-        { name: "Magma", scale: d3.interpolateMagma },
-        { name: "Plasma", scale: d3.interpolatePlasma },
-        { name: "Cividis", scale: d3.interpolateCividis },
+        { name: "Category10", scale: d3.schemeCategory10 },
+        { name: "Category20", scale: d3.schemeCategory20 },
+        { name: "Accent", scale: d3.schemeAccent },
+        { name: "Dark2", scale: d3.schemeDark2 },
+        { name: "Paired", scale: d3.schemePaired },
+        { name: "Set1", scale: d3.schemeSet1 },
+        { name: "Set2", scale: d3.schemeSet2 },
+        { name: "Set3", scale: d3.schemeSet3 },
     ];
 
     colorOptions.forEach((option) => {
@@ -236,14 +268,14 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         const selectedOption = colorOptions.find(
             (option) => option.name === this.value
         );
-        colorScale = d3
-            .scaleSequential(selectedOption.scale)
-            .domain([0, zMax]);
-        updateHeatmap(pivotData, d3.select("#timeSelector").property("value"), regions, dateSelector.property("value"));
-        updateLegend(colorScale);
+        colorScale.range(selectedOption.scale);
+        const timeUnit = d3.select("#timeSelector").property("value");
+        updateHeatmap(pivotData, timeUnit, regions, dateSelector.property("value"));
+        const stepSize = timeUnit === "month" ? 50 : 2000;
+        updateLegend(colorScale, zMax, stepSize);
     });
 
-    const legendWidth = 40,
+    const legendWidth = 60,
         legendHeight = height;
 
     const legendSvg = d3
@@ -273,11 +305,13 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .attr("y2", "0%")
         .attr("spreadMethod", "pad");
 
-    for (let i = 0; i <= 100; i += 1) {
+    const colorDomain = d3.range(0, zMax, 2000);
+
+    colorDomain.forEach((d, i) => {
         legendGradient.append("stop")
-            .attr("offset", `${i}%`)
-            .attr("stop-color", colorScale(zMax * i / 100));
-    }
+            .attr("offset", `${(i / colorDomain.length) * 100}%`)
+            .attr("stop-color", colorScale(d));
+    });
 
     legendSvg
         .append("rect")
@@ -299,43 +333,8 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .attr("class", "text-sm font-semibold text-gray-700")
         .text("Requetes");
 
-    function updateLegend(colorScale) {
-        const legendGradient = legendSvg.select("defs linearGradient");
-        legendGradient.selectAll("stop").remove();
+    updateLegend(colorScale, zMax, 2000);
 
-        for (let i = 0; i <= 100; i += 1) {
-            legendGradient.append("stop")
-                .attr("offset", `${i}%`)
-                .attr("stop-color", colorScale(zMax * i / 100));
-        }
-    }
-
-    function updateGradient(data) {
-        let zMaxq = d3.max(data, d => d.NB_REQST);
-        colorScale.domain([0, zMaxq]);
-
-        const gradient = legendSvg.select("defs")
-            .select("linearGradient")
-            .selectAll("stop")
-            .data(d3.range(0, 101).map(i => ({ offset: `${i}%`, color: colorScale(zMaxq * i / 100) })))
-            .join("stop")
-            .attr("offset", d => d.offset)
-            .attr("stop-color", d => d.color);
-    }
-
-    regionSelector
-        .append("option")
-        .attr("value", "Tout")
-        .text("Tout");
-
-    regionSelector.selectAll(null)
-        .data(regions)
-        .enter()
-        .append("option")
-        .attr("value", d => d)
-        .text(d => d);
-
-    // Create a function to handle legend click
     function handleLegendClick(lowerBound, upperBound) {
         const highlightedData = data.filter(d => d.NB_REQST > lowerBound && d.NB_REQST <= upperBound);
         
@@ -350,31 +349,14 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
             .attr("fill", d => colorScale(d.NB_REQST));
     }
 
-    // Add interactivity to the legend
-    const legendSteps = 40; // Number of steps in the legend
-    const stepSize = zMax / legendSteps; // Size of each step
-
-    legendSvg.selectAll("rect.legend-step")
-        .data(d3.range(0, zMax, stepSize))
-        .enter()
-        .append("rect")
-        .attr("class", "legend-step")
-        .attr("x", 0)
-        .attr("y", d => legendScale(d + stepSize))
-        .attr("width", legendWidth)
-        .attr("height", d => legendScale(d) - legendScale(d + stepSize))
-        .attr("fill", d => colorScale(d + stepSize))
-        .on("click", function (event, d) {
-            handleLegendClick(d, d + stepSize);
-        });
-
     // Update heatmap on region selection change
     regionSelector.on("change", function () {
         const selectedRegions = Array.from(this.selectedOptions, option => option.value);
         const selectedTimeUnit = timeSelector.property("value");
         const selectedDate = dateSelector.property("value");
         updateHeatmap(pivotData, selectedTimeUnit, selectedRegions, selectedDate);
-        updateGradient(data);
+        const stepSize = selectedTimeUnit === "month" ? 50 : 2000;
+        updateLegend(colorScale, zMax, stepSize);
     });
 
     // Update heatmap on time period selection change
@@ -382,11 +364,14 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         const timeUnit = this.value;
         aggregatedData = aggregateData(data, timeUnit);
         pivotData = createPivotTable(aggregatedData);
+        zMax = d3.max(aggregatedData.map(d => d[1]).flatMap(d => d[1]));
+        colorScale.domain([0, zMax]);
         const selectedRegions = Array.from(regionSelector.node().selectedOptions, option => option.value);
         const selectedDate = dateSelector.property("value");
         populateDateSelector(data, timeUnit);
         updateHeatmap(pivotData, timeUnit, selectedRegions, selectedDate);
-        updateGradient(data);
+        const stepSize = timeUnit === "month" ? 50 : 2000;
+        updateLegend(colorScale, zMax, stepSize);
     });
 
     dateSelector.on("change", function () {
@@ -394,7 +379,8 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         const selectedTimeUnit = timeSelector.property("value");
         const selectedDate = this.value;
         updateHeatmap(pivotData, selectedTimeUnit, selectedRegions, selectedDate);
-        updateGradient(data);
+        const stepSize = selectedTimeUnit === "month" ? 50 : 2000;
+        updateLegend(colorScale, zMax, stepSize);
     });
 
     // Initial population of date selector
