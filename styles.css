@@ -31,3 +31,17 @@ body {
     flex: 1;
     padding: 20px;
 }
+
+.tooltip {
+    position: absolute;
+    text-align: center;
+    width: auto;
+    height: auto;
+    padding: 8px;
+    font: 12px sans-serif;
+    background: rgba(0, 0, 0, 0.8);
+    border: 0;
+    border-radius: 4px;
+    pointer-events: none;
+    color: white;
+  }
