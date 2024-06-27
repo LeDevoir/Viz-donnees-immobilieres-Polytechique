@@ -65,7 +65,7 @@ const colorMap = {
   "004": "#59A4D0",
   "005": "#EFCB09",
   "006": "#D0E009",
-  "007": "#C5D84A",
+  "007": "#ADBE17",
   "008": "#01B850",
   "009": "#01A689",
   "010": "#02A3A3",
@@ -74,11 +74,11 @@ const colorMap = {
   "013": "#096EBE",
   "014": "#B266EB",
   "015": "#CB96C4",
-  "016": "#C40093",
+  "016": "#810856",
   "017": "#E10064",
 };
 
-const regionIdsWanted = ["001", "002", "003"];
+const regionIdsWanted = ["001", "002", "003","004","005","006","007","008","009","010","011","012","013","014","015","016","017"];
 
 const regionIdsWanteds = [
   "1",
@@ -104,19 +104,22 @@ let startYear;
 let endYear;
 let startMonth;
 let endMonth;
+let markerStartYear, markerEndYear, markerStartMonth, markerEndMonth;
+
+let rawData; // Declare rawData here to make it accessible
 
 const graph = d3.select('.graph');
 const svgContainer = graph.select('.stackedArea-svg');
-const margin = { top: 50, right: 30, bottom: 70, left: 80 };
+const margin = { top: 40, right: 10, bottom: 100, left: 80 };  // Increase bottom margin to accommodate the markers
+let width, height;
 
 function setSizing() {
-  const margin = { top: 20, right: 30, bottom: 80, left: 70 };
-  const bounds = graph.node().getBoundingClientRect();
-  const width = bounds.width - margin.left - margin.right;
-  const height = 600 - margin.top - margin.bottom;
+
+  width = 1000- margin.left - margin.right;
+  height = 600 - margin.top - margin.bottom;
 
   svgContainer
-    .attr('width', bounds.width)
+    .attr('width', 1000)
     .attr('height', 600);
 
   const svg = svgContainer.selectAll('g').data([0])
@@ -130,7 +133,6 @@ function build(data) {
   const { width, height, svg } = setSizing();
   const { xScale, yScale, color } = createScales(width, height);
   const stack = createStack(regionIdsWanteds);
-  console.log(data);
   const series = stack(data);
 
   svg.selectAll("*").remove(); // Clear the SVG before drawing
@@ -172,19 +174,24 @@ function build(data) {
     width,
     regionsMaps,
   );
+
+  drawMarkers(svg, xScale, yScale, height, data);
 }
 
-d3.csv('donn_hypoth_reqst.csv', d3.autoType).then(function (rawData) {
-  const { minDate, maxDate } = getDateRange(rawData);
-   
-  startYear = minDate.getUTCFullYear();
- 
-  endYear = maxDate.getUTCFullYear();
- 
-  startMonth = minDate.getUTCMonth() + 1;
 
+d3.csv('donn_hypoth_reqst.csv', d3.autoType).then(function (data) {
+  rawData = data; // Assign rawData
+
+  const { minDate, maxDate } = getDateRange(rawData);
+  startYear = minDate.getUTCFullYear();
+  endYear = maxDate.getUTCFullYear();
+  startMonth = minDate.getUTCMonth() + 1;
   endMonth = maxDate.getUTCMonth() + 1;
 
+  markerStartYear = startYear;
+  markerEndYear = endYear;
+  markerStartMonth = startMonth;
+  markerEndMonth = endMonth;
 
   const stackedData = prepareStackedData(rawData, regionIdsWanted, startYear, endYear, startMonth, endMonth);
   build(stackedData);
@@ -209,6 +216,15 @@ d3.csv('donn_hypoth_reqst.csv', d3.autoType).then(function (rawData) {
     endMonth = newEndMonth;
     const updatedData = prepareStackedData(rawData, regionIdsWanted, startYear, endYear, startMonth, endMonth);
     build(updatedData);
+  }, minDate, maxDate);
+
+  setMarkerFilters((newMarkerStartYear, newMarkerEndYear, newMarkerStartMonth, newMarkerEndMonth) => {
+    markerStartYear = newMarkerStartYear;
+    markerEndYear = newMarkerEndYear;
+    markerStartMonth = newMarkerStartMonth;
+    markerEndMonth = newMarkerEndMonth;
+    const updatedData = prepareStackedData(rawData, regionIdsWanted, startYear, endYear, startMonth, endMonth);
+    build(updatedData); // Rebuild the graph with updated markers
   }, minDate, maxDate);
 
   window.addEventListener('resize', () => {

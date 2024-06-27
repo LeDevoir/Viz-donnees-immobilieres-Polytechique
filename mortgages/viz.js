@@ -1,4 +1,3 @@
-
 function createScales(width, height) {
   const xScale = d3.scaleTime().range([0, width]);
   const yScale = d3.scaleLinear().range([height, 0]);
@@ -19,7 +18,6 @@ function setScaleDomains(xScale, yScale, data, series) {
 }
 
 function createStack(regionIdsWanteds) {
-  console.log(regionIdsWanteds);
   return d3
     .stack()
     .keys(regionIdsWanteds)
@@ -46,11 +44,16 @@ function drawChart(svg, series, xScale, yScale, color, height, width, regionsMap
     )
     .attr("fill", (d, i) => color(i));
 
-  // Define the axes with grid lines
+  const monthNamesInFrench = ["jan", "fév", "mar", "avr", "mai", "jun", "jul", "aoû", "sep", "oct", "nov", "déc"];
   const xAxis = d3
     .axisBottom(xScale)
     .ticks(d3.timeMonth.every(1)) // Show a tick for every month
-    .tickFormat(d3.timeFormat("%b-%y")) // Format as "Jan-20"
+    .tickFormat(d => {
+      const date = new Date(d);
+      const month = date.getMonth(); // Get the month index (0-11)
+      const year = date.getFullYear();
+      return `${monthNamesInFrench[month]}-${year.toString().substr(-2)}`;
+    })
     .tickSize(-height) // Extend the tick lines to create grid lines
     .tickSizeOuter(0); // Remove the outer ticks
 
@@ -127,7 +130,6 @@ function drawChart(svg, series, xScale, yScale, color, height, width, regionsMap
         let regionId = null;
         let value = null;
         Object.keys(d.data).forEach((key) => {
-          console.log(d.data);
           if (typeof d.data[key] === "number") {
             count += d.data[key];
             if (count === d[1]) {
@@ -143,7 +145,7 @@ function drawChart(svg, series, xScale, yScale, color, height, width, regionsMap
           )
           .style("visibility", "visible")
           .style("left", `${event.pageX + 10}px`)
-          .style("top", `${event.pageY + 10}px`);
+          .style("top", `${event.pageY - 50}px`);
 
         // Make the dot visible
         d3.select(event.currentTarget)
@@ -157,4 +159,211 @@ function drawChart(svg, series, xScale, yScale, color, height, width, regionsMap
         d3.select(event.currentTarget).style("opacity", 0).attr("r", 3); // Reset radius
       });
   });
+}
+
+function drawMarkers(svg, xScale, yScale, height, data) {
+  const markerAData = new Date(markerStartYear, markerStartMonth - 1);
+  const markerBData = new Date(markerEndYear, markerEndMonth - 1);
+
+ 
+  const minDate=new Date(data[0].date);
+  const maxDate= new Date(data[data.length-1].date);
+  const minYear = minDate.getUTCFullYear();
+  const minMonth = minDate.getUTCMonth()+1;
+  const maxYear = maxDate.getUTCFullYear();
+  const maxMonth = maxDate.getUTCMonth()+1;
+  console.log(maxYear)
+  console.log(maxMonth+"MAXMONTH");
+  console.log(markerEndMonth + "ENDmoNTH")
+
+
+  console.log(data);
+  // Remove existing message if any
+  svg.selectAll(".invalid-marker-message").remove();
+
+  // Validate marker dates
+  let invalidMarkers = false;
+  console.log(markerAData);
+  console.log(markerBData);
+  if ( markerStartYear < minYear  || ( markerStartYear === minYear && markerStartMonth < minMonth) || markerEndYear > maxYear || markerEndYear === maxYear && markerEndMonth > maxMonth) {
+    invalidMarkers = true;
+    svg.append('text')
+      .attr('class', 'invalid-marker-message')
+      .attr('x', width / 2)
+      .attr('y', -10)
+      .attr('text-anchor', 'middle')
+      .attr('fill', 'red')
+      .attr('font-size', '14px')
+      .text("Assurez-vous que les dates des marqueurs ne soient pas à l'extérieur de la période couverte.");
+  }
+
+  if (  markerEndYear < markerStartYear || markerStartYear > markerEndYear || ( markerEndYear <= markerStartYear && markerEndMonth < markerStartMonth ) ) {
+    invalidMarkers = true;
+    svg.append('text')
+      .attr('class', 'invalid-marker-message')
+      .attr('x', width / 2)
+      .attr('y', -10)
+      .attr('text-anchor', 'middle')
+      .attr('fill', 'red')
+      .attr('font-size', '14px')
+      .text('Assurez-vous que la date du marqueur A soit inférieur ou égale à celle du marqueur B.');
+  }
+
+  if(!invalidMarkers){
+  const markerA = svg.append('line')
+    .attr('class', 'marker-line')
+    .attr('x1', xScale(markerAData))
+    .attr('x2', xScale(markerAData))
+    .attr('y1', 0)
+    .attr('y2', height)
+    .attr('stroke', 'black')
+    .attr('stroke-width', 2)
+    .attr('stroke-dasharray', '5,5');
+
+  const markerB = svg.append('line')
+    .attr('class', 'marker-line')
+    .attr('x1', xScale(markerBData))
+    .attr('x2', xScale(markerBData))
+    .attr('y1', 0)
+    .attr('y2', height)
+    .attr('stroke', 'black')
+    .attr('stroke-width', 2)
+    .attr('stroke-dasharray', '5,5');
+  } else{
+    svg.selectAll('marker-line').remove();
+  }
+
+  if (!invalidMarkers) {
+    const totalMortgagesA = computeTotalMortgages(data, markerStartYear, markerStartMonth);
+    const totalMortgagesB = computeTotalMortgages(data, markerEndYear, markerEndMonth);
+    const netVariation = ((totalMortgagesB - totalMortgagesA) / totalMortgagesA) * 100;
+
+    let message = '';
+    if (netVariation > 0) {
+      message = `Augmentation de ${netVariation.toFixed(2)}% du nombre d'hypothèques.`;
+    } else if (netVariation < 0) {
+      message = `Diminution de ${netVariation.toFixed(2) * -1 }% du nombre d'hypothèques.`;
+    } else {
+      message = `Aucune variation des hypothèques.`;
+    }
+
+    if(message === `Aucune variation des hypothèques.`){
+      if( xScale(markerBData) < 150){
+        svg.append('text')
+          .attr('class', 'net-variation-text')
+          .attr('x', 0 )
+          .attr('y', -10 )
+          .attr('fill', 'black')
+          .attr('font-size', '14px')
+          .attr('font-weight', 'bold')
+          .text( message );
+        svg.append('line')
+          .attr('class', 'slope-line')
+          .attr('x1', xScale(markerAData))
+          .attr('x2', xScale(markerBData))
+          .attr('y1', yScale(totalMortgagesA))
+          .attr('y2', yScale(totalMortgagesB))
+          .attr('stroke', 'blue')
+          .attr('stroke-width', 2)
+          .attr('stroke-dasharray', '5,5');
+      } else if(xScale(markerAData) > 800 && xScale(markerBData) > 800) {
+        console.log(xScale(markerBData) + "TRY1000")
+        svg.append('text')
+          .attr('class', 'net-variation-text')
+          .attr('x', 680)
+          .attr('y', -10 )
+          .attr('fill', 'black')
+          .attr('font-size', '14px')
+          .attr('font-weight', 'bold')
+          .text( message );
+        svg.append('line')
+          .attr('class', 'slope-line')
+          .attr('x1', xScale(markerAData))
+          .attr('x2', xScale(markerBData))
+          .attr('y1', yScale(totalMortgagesA))
+          .attr('y2', yScale(totalMortgagesB))
+          .attr('stroke', 'blue')
+          .attr('stroke-width', 2)
+          .attr('stroke-dasharray', '5,5');
+      } else {
+        console.log(xScale(markerBData) + "TRY1000")
+        svg.append('text')
+          .attr('class', 'net-variation-text')
+          .attr('x', xScale(markerBData) - 100 )
+          .attr('y', -10 )
+          .attr('fill', 'black')
+          .attr('font-size', '14px')
+          .attr('font-weight', 'bold')
+          .text( message );
+        svg.append('line')
+          .attr('class', 'slope-line')
+          .attr('x1', xScale(markerAData))
+          .attr('x2', xScale(markerBData))
+          .attr('y1', yScale(totalMortgagesA))
+          .attr('y2', yScale(totalMortgagesB))
+          .attr('stroke', 'blue')
+          .attr('stroke-width', 2)
+          .attr('stroke-dasharray', '5,5');
+      } 
+    } else {
+
+      if( xScale(markerAData) > 600){
+        console.log(xScale(markerBData));
+        svg.append('text')
+          .attr('class', 'net-variation-text')
+          .attr('x', 560 )
+          .attr('y', -10 )
+          .attr('fill', 'black')
+          .attr('font-size', '14px')
+          .attr('font-weight', 'bold')
+          .text( message );
+        svg.append('line')
+          .attr('class', 'slope-line')
+          .attr('x1', xScale(markerAData))
+          .attr('x2', xScale(markerBData))
+          .attr('y1', yScale(totalMortgagesA))
+          .attr('y2', yScale(totalMortgagesB))
+          .attr('stroke', 'blue')
+          .attr('stroke-width', 2)
+          .attr('stroke-dasharray', '5,5');
+      } else if( xScale(markerBData) < 350 && xScale(markerAData) < 150){
+        console.log(xScale(markerBData));
+        svg.append('text')
+          .attr('class', 'net-variation-text')
+          .attr('x', 0 )
+          .attr('y', -10 )
+          .attr('fill', 'black')
+          .attr('font-size', '14px')
+          .attr('font-weight', 'bold')
+          .text( message );
+        svg.append('line')
+          .attr('class', 'slope-line')
+          .attr('x1', xScale(markerAData))
+          .attr('x2', xScale(markerBData))
+          .attr('y1', yScale(totalMortgagesA))
+          .attr('y2', yScale(totalMortgagesB))
+          .attr('stroke', 'blue')
+          .attr('stroke-width', 2)
+          .attr('stroke-dasharray', '5,5');
+        } else{
+            svg.append('text')
+              .attr('class', 'net-variation-text')
+              .attr('x', ((xScale(markerBData) - xScale(markerAData))/2) + xScale(markerAData) -170 )
+              .attr('y', -10 )
+              .attr('fill', 'black')
+              .attr('font-size', '14px')
+              .attr('font-weight', 'bold')
+              .text( message );
+            svg.append('line')
+              .attr('class', 'slope-line')
+              .attr('x1', xScale(markerAData))
+              .attr('x2', xScale(markerBData))
+              .attr('y1', yScale(totalMortgagesA))
+              .attr('y2', yScale(totalMortgagesB))
+              .attr('stroke', 'blue')
+              .attr('stroke-width', 2)
+              .attr('stroke-dasharray', '5,5');
+        }
+    }
+}
 }

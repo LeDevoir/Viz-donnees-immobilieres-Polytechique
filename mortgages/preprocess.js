@@ -89,3 +89,28 @@ function prepareStackedData(
 
   return stackedData;
 }
+
+/**
+ * Compute the total mortgages for a given year and month.
+ *
+ * @param {object[]} data The data to process
+ * @param {number} year The year to filter
+ * @param {number} month The month to filter (1-12)
+ * @returns {number} The total mortgages for the specified year and month
+ */
+function computeTotalMortgages(data, year, month) {
+  const filteredData = data.filter(d => {
+    const date = new Date(d.date);
+    return date.getUTCFullYear() === year && (date.getUTCMonth() + 1) === month;
+  });
+
+  return filteredData.reduce((acc, d) => {
+    let total = 0;
+    for (let key in d) {
+      if (key !== 'date' && !isNaN(d[key])) {
+        total += d[key];
+      }
+    }
+    return acc + total;
+  }, 0);
+}
