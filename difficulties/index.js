@@ -141,11 +141,16 @@ document.addEventListener("DOMContentLoaded", function () {
       const regionId = d.properties.res_co_reg;
       const dataForRegion = csvData.filter(
         (data) =>
-          data.region === regionId &&
-          data.year >= selectedStartYear &&
-          data.year <= selectedEndYear &&
-          data.month >= selectedStartMonth &&
-          data.month <= selectedEndMonth,
+          {
+            if (data.region !== regionId) return false;
+            if (data.year < selectedStartYear || data.year > selectedEndYear)
+              return false;
+            if (data.year === selectedStartYear && data.month < selectedStartMonth)
+              return false;
+            if (data.year === selectedEndYear && data.month > selectedEndMonth)
+              return false;
+            return true;
+          }
       );
 
       d.properties.totalDistressedPeople = dataForRegion.reduce(
