@@ -20,30 +20,37 @@
     <div class="flex h-full flex-col gap-4 p-4 bg-neutral-400">
       <a class="p-2 font-bold btn" href="/">Acceuil</a>
       <a class="p-2 font-bold btn btn-neutral" href="/transfers">Transferts</a>
-      <a class="p-2 font-bold btn " href="/sales">Ventes</a>
-      <a class="p-2 font-bold btn" href="/difficulties">Difficultés financières</a>
+      <a class="p-2 font-bold btn" href="/sales">Ventes</a>
+      <a class="p-2 font-bold btn" href="/difficulties"
+        >Difficultés financières</a
+      >
       <a class="p-2 font-bold btn" href="/mortgages">Hypothèques</a>
     </div>
 
-    <div class="flex flex-col flex-1 p-4 bg-gray-100">
-      <div class="controls mb-4 flex items-center justify-center">
-        <label for="timeSelector" class="mr-2">Sélectionner l'interval de temps:</label>
+    <div class="flex flex-col flex-1 bg-gray-100">
+      <h1 class="p-4 text-xl text-center font-bold">PLACEHOLDER</h1>
+      <div class="controls mb-4 flex p-4 items-center justify-center">
+        <label for="timeSelector" class="mr-2"
+          >Sélectionner l'interval de temps:</label
+        >
         <select id="timeSelector" class="p-2 border rounded-md">
           <option value="month">Mensuel</option>
           <option value="year">Annuel</option>
         </select>
-        <label for="regionSelector" class="ml-4 mr-2">Sélectionner les régions:</label>
+        <label for="regionSelector" class="ml-4 mr-2"
+          >Sélectionner les régions:</label
+        >
         <select id="regionSelector" multiple class="p-2 border rounded-md">
           <option value="Tout"></option>
         </select>
-<!--         <label for="startDate" class="ml-4 mr-2">Date de début:</label>
+        <!--         <label for="startDate" class="ml-4 mr-2">Date de début:</label>
         <input type="date" id="startDate" class="p-2 border rounded-md">
         <label for="endDate" class="ml-4 mr-2">Date de fin:</label>
         <input type="date" id="endDate" class="p-2 border rounded-md">
         <button id="applyFilters" class="ml-4 p-2 border rounded-md bg-blue-500 text-white">Appliquer</button> -->
       </div>
       <div class="flex justify-center">
-        <div id="heatmap" class="w-9/12  place-content-center" ></div>
+        <div id="heatmap" class="w-9/12 place-content-center"></div>
         <div id="legend" class="ml-5"></div>
       </div>
     </div>
