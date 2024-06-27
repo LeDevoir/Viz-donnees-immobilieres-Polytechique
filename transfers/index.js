@@ -168,7 +168,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
             selectedRegions = regions;
         }
 
-        if (selectedDate !== "All") {
+        if (selectedDate !== "Année-Mois") {
             pivotData = {
                 ...pivotData,
                 ...Object.fromEntries(
@@ -198,7 +198,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
                         const nbRequests = pivotData[region][time] || 0;
                         tooltip.transition().duration(200).style("opacity", 0.9);
                         tooltip
-                            .html(`Région: ${region}<br>Temps: ${time}<br>Requetes: ${nbRequests}`)
+                            .html(`Région: ${region}<br>Temps: ${time}<br>requêtes: ${nbRequests}`)
                             .style("left", (event.pageX + 10) + "px")
                             .style("top", (event.pageY - 28) + "px");
                     })
@@ -209,7 +209,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         });
     };
 
-    updateHeatmap(pivotData, initialTimeUnit, regions, "All");
+    updateHeatmap(pivotData, initialTimeUnit, regions, "Année-Mois");
 
     const colorSelector = d3
         .select("#colorSelector")
