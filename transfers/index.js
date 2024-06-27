@@ -195,7 +195,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
                     .on("mouseover", function (event, d) {
                         tooltip.transition().duration(200).style("opacity", 0.9);
                         tooltip
-                            .html(`Région: ${region}<br>Temps: ${time}<br>Requetes: ${pivotData[region][time] }`)
+                            .html(`Région: ${region}<br>Temps: ${time}<br>Requetes: ${pivotData[region][time] || 0}`)
                             .style("left", (event.pageX + 10) + "px")
                             .style("top", (event.pageY - 28) + "px");
                     })
@@ -206,7 +206,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         });
     };
 
-    updateHeatmap(pivotData, initialTimeUnit, regions, "Tout");
+    updateHeatmap(pivotData, initialTimeUnit, regions, "All");
 
     const colorSelector = d3
         .select("#colorSelector")
@@ -335,7 +335,10 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     // Create a function to handle legend click
     function handleLegendClick(lowerBound, upperBound) {
         const highlightedData = data.filter(d => d.NB_REQST > lowerBound && d.NB_REQST <= upperBound);
-        console.log("Highlighted Data: ", highlightedData);
+        
+        highlightedData.forEach(d => {
+            d.Region = regionNames[d.ID_REGN_ADMIN];
+        });
 
         svg.selectAll("rect")
             .data(highlightedData, d => `${d.Region}-${d.MonthFormatted}`)
