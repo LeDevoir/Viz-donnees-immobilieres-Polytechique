@@ -147,7 +147,11 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         d3.select(".axis-label")
             .text(xAxisLabel);
         const times = Array.from(new Set(data.map((d) => timeUnit === "month" ? d.MonthFormatted : d.Year)));
-        x.domain(times);
+        if (selectedDate !== "All") {
+            x.domain([selectedDate]);
+        } else {
+            x.domain(times);
+        }
         xAxis
             .call(
                 d3.axisBottom(x).tickValues(
