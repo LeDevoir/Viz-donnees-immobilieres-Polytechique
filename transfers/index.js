@@ -242,19 +242,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         .ticks(20)
         .tickFormat(d3.format(".0f"));
     
-    const gradient = legendSvg.select("defs")
-    .select("linearGradient")
-    .selectAll("stop")
-    .data([
-        {offset: "0%", color: colorScale(0), opacity: 0.2},
-        {offset: "50%", color: colorScale((0 + zMax) / 2), opacity: 0.6},
-        {offset: "100%", color: colorScale(zMax), opacity: 1}
-    ])
-    .join("stop")
-    .attr("offset", d => d.offset)
-    .attr("stop-color", d => d.color)
-    .attr("stop-opacity", d => d.opacity);
-   const legendGradient = legendSvg.append("defs")
+    const legendGradient = legendSvg.append("defs")
     .append("svg:linearGradient")
     .attr("id", "gradient")
     .attr("x1", "0%")
@@ -263,7 +251,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     .attr("y2", "0%")
     .attr("spreadMethod", "pad");
 
-legendGradient.selectAll("stop")
+    legendGradient.selectAll("stop")
     .data([
         {offset: "0%", color: colorScale(0), opacity: 0.2},
         {offset: "33%", color: colorScale(zMax * 0.33), opacity: 0.5},
@@ -353,24 +341,38 @@ legendGradient.selectAll("stop")
         updateHeatmap(pivotData, d3.select("#timeSelector").property("value"), regionSelector.property("value"));
     }
 
+    // Create a function to handle legend click
+    function handleLegendClick(lowerBound, upperBound) {
+        const highlightedDates = data.filter(d => d.NB_REQST > lowerBound && d.NB_REQST <= upperBound);
+
+        svg.selectAll("rect")
+            .data(highlightedDates, d => d.Region + d.MonthFormatted)
+            .transition()
+            .duration(500)
+            .attr("fill", d => colorScale(d.NB_REQST));
+    }
+
     // Add interactivity to the legend
+    const legendSteps = 10; // Number of steps in the legend
+    const stepSize = zMax / legendSteps; // Size of each step
+
     legendSvg.selectAll("rect")
-        .on("click", function() {
-            const index = d3.select(this).attr("index");
-            const bounds = colorScale.invertExtent(colorScale(index / 100));
-            toggleLegend({
-                lowerBound: bounds[0],
-                upperBound: bounds[1],
-                selected: d3.select(this).classed("selected")
-            });
-            d3.select(this).classed("selected", !d3.select(this).classed("selected"));
+        .data(d3.range(0, zMax, stepSize))
+        .enter()
+        .append("rect")
+        .attr("x", 0)
+        .attr("y", d => legendScale(d + stepSize))
+        .attr("width", legendWidth)
+        .attr("height", d => legendScale(d) - legendScale(d + stepSize))
+        .attr("fill", d => colorScale(d + stepSize))
+        .on("click", function(event, d) {
+            handleLegendClick(d, d + stepSize);
         });
 
     const filterDataByDate = (data, startDate, endDate) => {
         return data.filter(d => {
             const date = new Date(d.DT_DEBUT_MOIS);
             return (!startDate || date >= startDate) && (!endDate || date <= endDate);
-            
         });
     };
 
