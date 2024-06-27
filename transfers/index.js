@@ -1,4 +1,4 @@
-d3.csv('data/data.csv').then((data) => {
+d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     const regionNames = {
         1: "Bas-Saint-Laurent",
         2: "Saguenay-Lac-Saint-Jean",
