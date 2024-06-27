@@ -351,7 +351,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     }
 
     // Add interactivity to the legend
-    const legendSteps = 10; // Number of steps in the legend
+    const legendSteps = 40; // Number of steps in the legend
     const stepSize = zMax / legendSteps; // Size of each step
 
     legendSvg.selectAll("rect.legend-step")
