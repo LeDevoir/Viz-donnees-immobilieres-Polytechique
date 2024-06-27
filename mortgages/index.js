@@ -78,7 +78,25 @@ const colorMap = {
   "017": "#E10064",
 };
 
-const regionIdsWanted = ["001", "002", "003","004","005","006","007","008","009","010","011","012","013","014","015","016","017"];
+const regionIdsWanted = [
+  "001",
+  "002",
+  "003",
+  "004",
+  "005",
+  "006",
+  "007",
+  "008",
+  "009",
+  "010",
+  "011",
+  "012",
+  "013",
+  "014",
+  "015",
+  "016",
+  "017",
+];
 
 const regionIdsWanteds = [
   "1",
@@ -108,23 +126,22 @@ let markerStartYear, markerEndYear, markerStartMonth, markerEndMonth;
 
 let rawData; // Declare rawData here to make it accessible
 
-const graph = d3.select('.graph');
-const svgContainer = graph.select('.stackedArea-svg');
-const margin = { top: 40, right: 10, bottom: 100, left: 80 };  // Increase bottom margin to accommodate the markers
+const graph = d3.select(".graph");
+const svgContainer = graph.select(".stackedArea-svg");
+const margin = { top: 40, right: 10, bottom: 100, left: 80 }; // Increase bottom margin to accommodate the markers
 let width, height;
 
 function setSizing() {
-
-  width = 1000- margin.left - margin.right;
+  width = 1000 - margin.left - margin.right;
   height = 600 - margin.top - margin.bottom;
 
-  svgContainer
-    .attr('width', 1000)
-    .attr('height', 600);
+  svgContainer.attr("width", 1000).attr("height", 600);
 
-  const svg = svgContainer.selectAll('g').data([0])
-    .join('g')
-    .attr('transform', `translate(${margin.left},${margin.top})`);
+  const svg = svgContainer
+    .selectAll("g")
+    .data([0])
+    .join("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
 
   return { width, height, svg };
 }
@@ -146,7 +163,9 @@ function build(data) {
       .attr("text-anchor", "middle")
       .attr("font-size", "16px")
       .attr("fill", "gray")
-      .text("Désolé, aucune donnée disponible pour la période ou les régions sélectionnées.");
+      .text(
+        "Désolé, aucune donnée disponible pour la période ou les régions sélectionnées.",
+      );
     return;
   }
 
@@ -164,22 +183,15 @@ function build(data) {
   }
 
   setScaleDomains(xScale, yScale, data, series);
-  drawChart(
-    svg,
-    series,
-    xScale,
-    yScale,
-    color,
-    height,
-    width,
-    regionsMaps,
-  );
+  drawChart(svg, series, xScale, yScale, color, height, width, regionsMaps);
 
   drawMarkers(svg, xScale, yScale, height, data);
 }
 
-
-d3.csv('donn_hypoth_reqst.csv', d3.autoType).then(function (data) {
+d3.csv(
+  "https://www.donneesquebec.ca/recherche/dataset/statistiques-du-registre-foncier-du-quebec-sur-le-marche-immobilier/resource/739ac2bb-e549-4bcd-893d-768e37a03af6/download/donn_hypoth_reqst.csv",
+  d3.autoType,
+).then(function (data) {
   rawData = data; // Assign rawData
 
   const { minDate, maxDate } = getDateRange(rawData);
@@ -193,42 +205,97 @@ d3.csv('donn_hypoth_reqst.csv', d3.autoType).then(function (data) {
   markerStartMonth = startMonth;
   markerEndMonth = endMonth;
 
-  const stackedData = prepareStackedData(rawData, regionIdsWanted, startYear, endYear, startMonth, endMonth);
+  const stackedData = prepareStackedData(
+    rawData,
+    regionIdsWanted,
+    startYear,
+    endYear,
+    startMonth,
+    endMonth,
+  );
   build(stackedData);
 
   populateDropdown(regionIdsWanted, (regionId) => {
     addRegion(regionId, regionIdsWanted, removeRegionCallback);
-    const updatedData = prepareStackedData(rawData, regionIdsWanted, startYear, endYear, startMonth, endMonth);
+    const updatedData = prepareStackedData(
+      rawData,
+      regionIdsWanted,
+      startYear,
+      endYear,
+      startMonth,
+      endMonth,
+    );
     build(updatedData);
   });
 
   function removeRegionCallback(regionId) {
     removeRegion(regionId, regionIdsWanted, removeRegionCallback);
-    const updatedData = prepareStackedData(rawData, regionIdsWanted, startYear, endYear, startMonth, endMonth);
+    const updatedData = prepareStackedData(
+      rawData,
+      regionIdsWanted,
+      startYear,
+      endYear,
+      startMonth,
+      endMonth,
+    );
     build(updatedData);
   }
   updateSelectedRegions(regionIdsWanted, removeRegionCallback);
 
-  setDateFilters((newStartYear, newEndYear, newStartMonth, newEndMonth) => {
-    startYear = newStartYear;
-    endYear = newEndYear;
-    startMonth = newStartMonth;
-    endMonth = newEndMonth;
-    const updatedData = prepareStackedData(rawData, regionIdsWanted, startYear, endYear, startMonth, endMonth);
-    build(updatedData);
-  }, minDate, maxDate);
+  setDateFilters(
+    (newStartYear, newEndYear, newStartMonth, newEndMonth) => {
+      startYear = newStartYear;
+      endYear = newEndYear;
+      startMonth = newStartMonth;
+      endMonth = newEndMonth;
+      const updatedData = prepareStackedData(
+        rawData,
+        regionIdsWanted,
+        startYear,
+        endYear,
+        startMonth,
+        endMonth,
+      );
+      build(updatedData);
+    },
+    minDate,
+    maxDate,
+  );
 
-  setMarkerFilters((newMarkerStartYear, newMarkerEndYear, newMarkerStartMonth, newMarkerEndMonth) => {
-    markerStartYear = newMarkerStartYear;
-    markerEndYear = newMarkerEndYear;
-    markerStartMonth = newMarkerStartMonth;
-    markerEndMonth = newMarkerEndMonth;
-    const updatedData = prepareStackedData(rawData, regionIdsWanted, startYear, endYear, startMonth, endMonth);
-    build(updatedData); // Rebuild the graph with updated markers
-  }, minDate, maxDate);
+  setMarkerFilters(
+    (
+      newMarkerStartYear,
+      newMarkerEndYear,
+      newMarkerStartMonth,
+      newMarkerEndMonth,
+    ) => {
+      markerStartYear = newMarkerStartYear;
+      markerEndYear = newMarkerEndYear;
+      markerStartMonth = newMarkerStartMonth;
+      markerEndMonth = newMarkerEndMonth;
+      const updatedData = prepareStackedData(
+        rawData,
+        regionIdsWanted,
+        startYear,
+        endYear,
+        startMonth,
+        endMonth,
+      );
+      build(updatedData); // Rebuild the graph with updated markers
+    },
+    minDate,
+    maxDate,
+  );
 
-  window.addEventListener('resize', () => {
-    const updatedData = prepareStackedData(rawData, regionIdsWanted, startYear, endYear, startMonth, endMonth);
+  window.addEventListener("resize", () => {
+    const updatedData = prepareStackedData(
+      rawData,
+      regionIdsWanted,
+      startYear,
+      endYear,
+      startMonth,
+      endMonth,
+    );
     build(updatedData);
   });
 });

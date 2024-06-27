@@ -64,7 +64,9 @@ document.addEventListener("DOMContentLoaded", function () {
       })
       .catch((error) => console.error("Error loading GeoJSON data: ", error));
 
-    d3.csv("donn_diff_fin_reqst.csv")
+    d3.csv(
+      "https://www.donneesquebec.ca/recherche/dataset/statistiques-du-registre-foncier-du-quebec-sur-le-marche-immobilier/resource/84ed216a-3284-4d05-aa85-d2ef30dd5d0f/download/donn_diff_fin_reqst.csv",
+    )
       .then((data) => {
         const parsedData = data.reduce((acc, d) => {
           const year = +d.DT_DEBUT_MOIS.substring(0, 4);
@@ -113,7 +115,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const uniqueMonths = [...new Set(parsedData.map((d) => d.month))];
         selectedStartMonth = uniqueMonths[0];
-        selectedEndMonth = uniqueMonths[years.length - 1];
+        selectedEndMonth = uniqueMonths[uniqueMonths.length - 1];
 
         updateControls();
         drawMap();
