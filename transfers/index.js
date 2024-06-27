@@ -29,7 +29,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
 
     const minDate = d3.min(data, d => d.Month);
     const maxDate = d3.max(data, d => d.Month);
-    let zMax = d3.max(data, d => d.NB_REQST); 
+    let zMax = 50000; 
     let colorScale = d3.scaleSequential(d3.interpolateViridis)
         .domain([0, zMax]);
 
@@ -243,7 +243,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
         updateLegend(colorScale);
     });
 
-    const legendWidth = 40,
+    const legendWidth = 60,
         legendHeight = height;
 
     const legendSvg = d3
@@ -311,7 +311,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     }
 
     function updateGradient(data) {
-        let zMaxq = d3.max(data, d => d.NB_REQST);
+        let zMaxq = 50000;
         colorScale.domain([0, zMaxq]);
 
         const gradient = legendSvg.select("defs")
@@ -351,7 +351,7 @@ d3.csv('donn_transf_prop_reqst.csv').then((data) => {
     }
 
     // Add interactivity to the legend
-    const legendSteps = 40; // Number of steps in the legend
+    const legendSteps = 50; // Number of steps in the legend
     const stepSize = zMax / legendSteps; // Size of each step
 
     legendSvg.selectAll("rect.legend-step")
