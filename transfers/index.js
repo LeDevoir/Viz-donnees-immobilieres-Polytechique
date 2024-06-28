@@ -1,4 +1,10 @@
 let legendScale=0;
+let colorScale=0;
+let zMax =0 ;
+let zMaxq=0;
+let localMax=0;
+let legendGradient;
+let legendSvg;
 d3.csv(
   "https://www.donneesquebec.ca/recherche/dataset/statistiques-du-registre-foncier-du-quebec-sur-le-marche-immobilier/resource/15747fac-ab86-4334-814e-1aa4633430ee/download/donn_prix_vente_reqst.csv",
 ).then((data) => {
@@ -32,8 +38,8 @@ d3.csv(
 
   const minDate = d3.min(data, (d) => d.Month);
   const maxDate = d3.max(data, (d) => d.Month);
-  let zMax = d3.max(data, (d) => d.NB_REQST);
-  let colorScale = d3.scaleSequential(d3.interpolateViridis).domain([zMax, 0]);
+  zMax  = d3.max(data, (d) => d.NB_REQST);
+  colorScale = d3.scaleSequential(d3.interpolateViridis).domain([zMax, 0]);
 
   const regionSelector = d3.select("#regionSelector");
   regionSelector.selectAll("option").remove();
@@ -196,7 +202,7 @@ d3.csv(
       };
     }
 
-    let localMax = 0;
+    localMax = 0;
     selectedRegions.forEach((region) => {
       x.domain().forEach((time) => {
         localMax = Math.max(localMax, pivotData[region][time] || 0);
@@ -204,7 +210,7 @@ d3.csv(
     });
 
     colorScale.domain([localMax, 0]);
-    updateLegend(colorScale, localMax);
+    updateLegend(colorScale, localMax,legendSvg,legendScale);
 
     selectedRegions.forEach((region) => {
       x.domain().forEach((time) => {
@@ -235,6 +241,7 @@ d3.csv(
           });
       });
     });
+    updateLegend(colorScale, localMax,legendSvg,legendScale);
   };
 
   updateHeatmap(pivotData, initialTimeUnit, regions, "AA-MM");
@@ -268,13 +275,13 @@ d3.csv(
       regions,
       dateSelector.property("value"),
     );
-    updateLegend(colorScale, zMax);
+    updateLegend(colorScale, localMax,legendSvg,legendScale);
   });
 
   const legendWidth = 40,
     legendHeight = height;
 
-  const legendSvg = d3
+  legendSvg = d3
     .select("#legend")
     .append("svg")
     .attr("width", legendWidth + margin.right)
@@ -292,7 +299,7 @@ d3.csv(
     .ticks(20)
     .tickFormat(d3.format(".0f"));
 
-  const legendGradient = legendSvg
+  legendGradient = legendSvg
     .append("defs")
     .append("svg:linearGradient")
     .attr("id", "gradient")
@@ -302,7 +309,7 @@ d3.csv(
     .attr("y2", "0%")
     .attr("spreadMethod", "pad");
 
-  function updateLegend(colorScale, maxRequests) {
+  function updateLegend(colorScale, maxRequests,legendSvg,legendScale) {
     if(legendScale){
     legendScale.domain([0, maxRequests]);
     legendSvg.select(".axis").call(legendAxis);
@@ -317,7 +324,7 @@ d3.csv(
   }
   }
 
-  updateLegend(colorScale, zMax);
+  updateLegend(colorScale,localMax,legendSvg,legendScale);
 
   legendSvg
     .append("rect")
@@ -340,7 +347,7 @@ d3.csv(
     .text("Requêtes");
 
   function updateGradient(data) {
-    let zMaxq = d3.max(data, (d) => d.NB_REQST);
+    zMaxq = d3.max(data, (d) => d.NB_REQST);
     colorScale.domain([zMaxq, 0]);
 
     legendScale.domain([0, zMaxq]);
@@ -419,7 +426,6 @@ d3.csv(
     const selectedTimeUnit = timeSelector.property("value");
     const selectedDate = dateSelector.property("value");
     updateHeatmap(pivotData, selectedTimeUnit, selectedRegions, selectedDate);
-    updateGradient(data);
   });
 
   // Update heatmap on time period selection change
@@ -440,6 +446,7 @@ d3.csv(
     const selectedDate = dateSelector.property("value");
     populateDateSelector(data, timeUnit);
     updateHeatmap(pivotData, timeUnit, selectedRegions, selectedDate);
+    updateLegend(colorScale,localMax,legendSvg,legendScale);
   });
 
   dateSelector.on("change", function () {
@@ -450,6 +457,8 @@ d3.csv(
     const selectedTimeUnit = timeSelector.property("value");
     const selectedDate = this.value;
     updateHeatmap(pivotData, selectedTimeUnit, selectedRegions, selectedDate);
+    updateLegend(colorScale,localMax,legendSvg,legendScale);
+    
   });
 
   // Initial population of date selector
