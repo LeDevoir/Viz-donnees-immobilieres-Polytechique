@@ -87,3 +87,12 @@ h1 {
   margin-top: 3.25%;
   margin-right: 20%;
 }
+
+#messageSvg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-40%, -50%);
+  pointer-events: none; /* Prevents interaction with other elements /
+  z-index: 1000; / Ensures it appears on top of other elements  */
+}

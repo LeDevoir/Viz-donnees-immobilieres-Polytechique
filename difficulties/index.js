@@ -1,9 +1,14 @@
+let svg;
+let mapRef;
+let geojsonData = null;
+let data=0;
+let legendRef;
+let messageSvg;
 document.addEventListener("DOMContentLoaded", function () {
-  const mapRef = document.getElementById("mapSvg");
-  const legendRef = document.getElementById("legendSvg");
+  mapRef = document.getElementById("mapSvg");
+ legendRef = document.getElementById("legendSvg");
   const tooltipRef = document.getElementById("tooltip");
 
-  let geojsonData = null;
   let csvData = [];
   let years = [];
   let selectedStartYear = null;
@@ -124,35 +129,74 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function drawMap() {
-    if (!geojsonData || csvData.length === 0) return;
+    if (!geojsonData || csvData.length === 0) {
+      return;
+    }
 
+    if(messageSvg){
+      messageSvg.selectAll("*").remove();
+    }
+  
+    console.log(geojsonData);
+    console.log("HELLOOO");
+    console.log(csvData);
+    console.log("HELLOO1");
+  
+    const startDate = new Date(selectedStartYear, selectedStartMonth - 1);
+  const endDate = new Date(selectedEndYear, selectedEndMonth - 1);
+
+  const filteredData = csvData.filter((data) => {
+    const dataDate = new Date(data.year, data.month - 1);
+    return dataDate >= startDate && dataDate <= endDate;
+  });
+  
+    if (filteredData.length === 0) {
+      console.log("NOT ENTERING DATA");
+      d3.select(mapRef).selectAll("*").remove();
+      d3.select(legendRef).selectAll("*").remove();
+      svg.selectAll("*").remove();
+      
+      // Create a new SVG element for the message
+      messageSvg = d3.select("#messageSvg")
+        .attr("width",1200)
+        .attr("height",550)
+        .append("g")
+        .attr("transform", "translate(500, 20)"); // Center the text
+  
+      messageSvg
+        .append("text")
+        .attr("text-anchor", "middle")
+        .attr("font-size", "16px")
+        .attr("fill", "gray")
+        .text(
+          "Désolé, aucune donnée disponible pour la période ou les régions sélectionnées."
+        );
+      return;
+    }
+  
+  
     const mapContainerWidth = 550;
     const mapContainerHeight = 550;
-
+  
     const projection = d3
       .geoMercator()
       .fitSize([mapContainerWidth, mapContainerHeight], geojsonData);
     const path = d3.geoPath().projection(projection);
-
+  
     let totalDistressedPeople = 0;
     const categoryTotals = {};
-
+  
     geojsonData.features.forEach((d) => {
       const regionId = d.properties.res_co_reg;
-      const dataForRegion = csvData.filter(
-        (data) =>
-          data.region === regionId &&
-          data.year >= selectedStartYear &&
-          data.year <= selectedEndYear &&
-          data.month >= selectedStartMonth &&
-          data.month <= selectedEndMonth,
+      const dataForRegion = filteredData.filter(
+        (data) => data.region === regionId
       );
-
+  
       d.properties.totalDistressedPeople = dataForRegion.reduce(
         (sum, data) => sum + data.distressedPeople,
-        0,
+        0
       );
-
+  
       const aggregatedCategories = dataForRegion.reduce((acc, data) => {
         data.categories.forEach((c) => {
           if (!acc[c.category]) {
@@ -162,16 +206,14 @@ document.addEventListener("DOMContentLoaded", function () {
         });
         return acc;
       }, {});
-
-      d.properties.categories = Object.keys(aggregatedCategories).map(
-        (key) => ({
-          category: +key,
-          distressedPeople: aggregatedCategories[key],
-        }),
-      );
-
+  
+      d.properties.categories = Object.keys(aggregatedCategories).map((key) => ({
+        category: +key,
+        distressedPeople: aggregatedCategories[key],
+      }));
+  
       totalDistressedPeople += d.properties.totalDistressedPeople;
-
+  
       d.properties.categories.forEach((c) => {
         if (!categoryTotals[c.category]) {
           categoryTotals[c.category] = 0;
@@ -179,7 +221,7 @@ document.addEventListener("DOMContentLoaded", function () {
         categoryTotals[c.category] += c.distressedPeople;
       });
     });
-
+  
     const maxDistressedPeople =
       d3.max(geojsonData.features, (d) => d.properties.totalDistressedPeople) ||
       0;
@@ -187,17 +229,17 @@ document.addEventListener("DOMContentLoaded", function () {
       .scaleSequential()
       .domain([0, maxDistressedPeople])
       .interpolator(d3.interpolateRgbBasis(["green", "yellow", "red"]));
-
+  
     d3.select(mapRef).selectAll("*").remove();
     d3.select(legendRef).selectAll("*").remove();
-
-    const svg = d3.select(mapRef);
-
+  
+    svg = d3.select(mapRef);
+  
     svg
       .attr("width", mapContainerWidth)
       .attr("height", mapContainerHeight)
       .attr("viewBox", `0 0 ${mapContainerWidth} ${mapContainerHeight}`);
-
+  
     svg
       .selectAll("path")
       .data(geojsonData.features)
@@ -209,14 +251,14 @@ document.addEventListener("DOMContentLoaded", function () {
       .attr("stroke-width", 1)
       .on("mouseover", function (event, d) {
         const tooltipHtml = `<strong>${regionNames[d.properties.res_co_reg]}</strong><br>
-                    Total: ${d.properties.totalDistressedPeople}<br>
-                    ${d.properties.categories
-                      .map(
-                        (c) =>
-                          `${categoryNames[c.category]}: ${c.distressedPeople}`,
-                      )
-                      .join("<br>")}`;
-
+                  Total: ${d.properties.totalDistressedPeople}<br>
+                  ${d.properties.categories
+                    .map(
+                      (c) =>
+                        `${categoryNames[c.category]}: ${c.distressedPeople}`
+                    )
+                    .join("<br>")}`;
+  
         tooltipRef.innerHTML = tooltipHtml;
         tooltipRef.style.visibility = "visible";
       })
@@ -227,17 +269,17 @@ document.addEventListener("DOMContentLoaded", function () {
       .on("mouseout", function () {
         tooltipRef.style.visibility = "hidden";
       });
-
+  
     const legendContainerWidth = 800;
     const legendContainerHeight = 60;
-
+  
     const legendSvg = d3
       .select(legendRef)
       .attr("width", legendContainerWidth)
       .attr("height", legendContainerHeight);
-
+  
     legendSvg.selectAll("*").remove();
-
+  
     const legendGradient = legendSvg
       .append("defs")
       .append("linearGradient")
@@ -246,20 +288,20 @@ document.addEventListener("DOMContentLoaded", function () {
       .attr("y1", "0%")
       .attr("x2", "100%")
       .attr("y2", "0%");
-
+  
     legendGradient
       .selectAll("stop")
       .data(
         colorScale.ticks().map((t, i, n) => ({
           offset: `${(100 * i) / n.length}%`,
           color: colorScale(t),
-        })),
+        }))
       )
       .enter()
       .append("stop")
       .attr("offset", (d) => d.offset)
       .attr("stop-color", (d) => d.color);
-
+  
     legendSvg
       .append("rect")
       .attr("x", legendContainerWidth * 0.3)
@@ -267,24 +309,24 @@ document.addEventListener("DOMContentLoaded", function () {
       .attr("width", legendContainerWidth * 0.4)
       .attr("height", legendContainerHeight / 3)
       .style("fill", "url(#legendGradient)");
-
+  
     const legendScale = d3
       .scaleLinear()
       .domain(colorScale.domain())
       .range([legendContainerWidth * 0.3, legendContainerWidth * 0.7]);
-
+  
     const legendAxis = d3
       .axisBottom(legendScale)
       .ticks(5)
       .tickSize(-legendContainerHeight / 3);
-
+  
     legendSvg
       .append("g")
       .attr("transform", `translate(0, ${legendContainerHeight / 2 + 5})`)
       .call(legendAxis)
       .select(".domain")
       .remove();
-
+  
     legendSvg
       .append("text")
       .attr("x", legendContainerWidth / 2)
@@ -293,7 +335,7 @@ document.addEventListener("DOMContentLoaded", function () {
       .attr("class", "mb-2")
       .style("font-size", "12px")
       .text("Nombre total de détresses financières");
-
+  
     legendSvg
       .append("text")
       .attr("x", legendContainerWidth / 3 - 50)
@@ -301,7 +343,7 @@ document.addEventListener("DOMContentLoaded", function () {
       .attr("text-anchor", "end")
       .style("font-size", "12px")
       .text("Faible");
-
+  
     legendSvg
       .append("text")
       .attr("x", legendContainerWidth - (legendContainerWidth / 3 - 50))
@@ -309,8 +351,8 @@ document.addEventListener("DOMContentLoaded", function () {
       .attr("text-anchor", "start")
       .style("font-size", "12px")
       .text("Élevé");
-  }
-
+    }
+  
   function updateControls() {
     const startYearSelect = d3.select("#startYearSelect");
     startYearSelect

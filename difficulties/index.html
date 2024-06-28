@@ -11,11 +11,11 @@
       rel="stylesheet"
       type="text/css"
     />
-    <link href="../output.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body
     data-theme="light"
-    class="grid min-h-screen h-full w-full lg:grid-cols-[135px_1fr_280px]"
+    class="grid min-h-screen w-full lg:grid-cols-[135px_1fr_280px]"
   >
     <div class="flex h-full flex-col gap-4 p-4 bg-neutral-400">
       <a class="p-2 font-bold btn" href="/">Accueil</a>
@@ -28,11 +28,12 @@
     </div>
 
     <div class="relative space-y-4">
-      <h1 class="text-lg font-extrabold">
-        La détresse financière au Québec selon les catégories par région
+      <h1 class=" text-3xl font-extrabold dark:text-white">
+        La détresse financière au Québec en nombre
       </h1>
       <svg class="mx-auto" id="mapSvg"></svg>
       <svg class="mx-auto" id="legendSvg"></svg>
+      <svg id="messageSvg"></svg>
       <div
         id="tooltip"
         class="absolute pointer-events-none p-2 rounded-lg bg-white border text-xs"
