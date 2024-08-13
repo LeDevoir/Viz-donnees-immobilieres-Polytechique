@@ -172,8 +172,8 @@ function renderChart(data) {
     let keys = Array.from(new Set(data.map((d) => d.CD_PLAGE_PRIX.toString())));
 
     const margin = { top: 20, right: 120, bottom: 100, left: 150 };
-    width = 1200 - margin.left - margin.right;
-    height = 550 - margin.top - margin.bottom;
+    let width = 1200 - margin.left - margin.right;
+    let height = 550 - margin.top - margin.bottom;
     svg = d3
       .select("#content-ventes")
       .html("") // Clear previous SVG content

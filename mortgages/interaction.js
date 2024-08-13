@@ -1,4 +1,6 @@
-function populateDropdown(regionIdsWanted, addRegionCallback) {
+import { allRegions, regionsMap, colorMap } from "./constants";
+
+export function populateDropdown(regionIdsWanted, addRegionCallback) {
   const dropdown = document.getElementById("region-select");
 
   const availableRegions = allRegions
@@ -46,7 +48,7 @@ function displayPositiveSign(number) {
   return "";
 }
 
-function addRegion(regionId, regionIdsWanted, removeRegionCallback) {
+export function addRegion(regionId, regionIdsWanted, removeRegionCallback) {
   if (!regionIdsWanted.includes(regionId)) {
     regionIdsWanted.push(regionId);
     regionIdsWanted.sort(); // Sort the list after adding a new region
@@ -56,7 +58,7 @@ function addRegion(regionId, regionIdsWanted, removeRegionCallback) {
   }
 }
 
-function removeRegion(regionId, regionIdsWanted, removeRegionCallback) {
+export function removeRegion(regionId, regionIdsWanted, removeRegionCallback) {
   const index = regionIdsWanted.indexOf(regionId);
   if (index > -1) {
     regionIdsWanted.splice(index, 1);
@@ -66,7 +68,7 @@ function removeRegion(regionId, regionIdsWanted, removeRegionCallback) {
   updateSelectedRegions(regionIdsWanted, removeRegionCallback);
 }
 
-function updateSelectedRegions(regionIdsWanted, removeRegionCallback) {
+export function updateSelectedRegions(regionIdsWanted, removeRegionCallback) {
   const container = document.querySelector(".selected-regions");
   container.innerHTML = "";
 
@@ -91,7 +93,7 @@ function updateSelectedRegions(regionIdsWanted, removeRegionCallback) {
   });
 }
 
-function setDateFilters(callback, minDate, maxDate) {
+export function setDateFilters(callback, minDate, maxDate) {
   const startYearSelect = document.getElementById("start-year");
   const endYearSelect = document.getElementById("end-year");
   const startMonthSelect = document.getElementById("start-month");
@@ -202,7 +204,7 @@ function setDateFilters(callback, minDate, maxDate) {
   updateFilters();
 }
 
-function setMarkerFilters(callback, minDate, maxDate) {
+export function setMarkerFilters(callback, minDate, maxDate) {
   const markerStartYearSelect = document.getElementById("marker-start-year");
   const markerEndYearSelect = document.getElementById("marker-end-year");
   const markerStartMonthSelect = document.getElementById("marker-start-month");
