@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Le Devoir: Marché immobilier</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@4.12.7/dist/full.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module" crossorigin src="../assets/sales-BCnwd1Q6.js"></script>
+    <link rel="modulepreload" crossorigin href="../assets/styles-DoX-3eds.js">
+    <link rel="stylesheet" crossorigin href="../assets/styles-jvYf2wiv.css">
+  </head>
+  <body
+    data-theme="light"
+    class="grid min-h-screen w-full md:grid-cols-[220px_1200_auto] lg:grid-cols-[135px_1200px_auto]"
+  >
+    <div class="flex h-full flex-col gap-4 p-4 bg-neutral-400">
+      <a class="p-2 font-bold btn" href="../index.html">Accueil</a>
+      <a class="p-2 font-bold btn" href="../transfers/index.html">Transferts</a>
+      <a class="p-2 font-bold btn btn-neutral" href="../sales/index.html">Ventes</a>
+      <a class="p-2 font-bold btn" href="../difficulties/index.html">Difficultés financières</a>
+      <a class="p-2 font-bold btn" href="../mortgages/index.html">Hypothèques</a>
+    </div>
+
+    <div class="flex flex-col">
+      <h1 class="text-lg font-extrabold">
+        Le nombre total de ventes de propriétés au Québec selon la région par
+        gamme de prix
+      </h1>
+      <div id="svg-container-ventes">
+        <div id="content-ventes"></div>
+      </div>
+      <div
+        class="grid grid-rows-[10px_auto] content-between gap-5 items-center justify-center"
+        id="controlsVentes"
+      >
+        <div class="time_filter" id="time_filter">
+          <label class="text-black font-bold" for="start-year"
+            >Choisissez la période à couvrir</label
+          >
+          <div class="grid gap-1 grid-cols-[2fr_3fr_3fr] items-center">
+            <label for="start-year">Début</label>
+            <select class="select select-sm select-bordered" id="start-year">
+              <option value="2019">2019</option>
+              <!-- Plus d'options -->
+            </select>
+            <select class="select select-sm select-bordered" id="start-month">
+              <option value="January">Janvier</option>
+              <!-- Plus d'options -->
+            </select>
+            <label for="end-year">Fin</label>
+            <select class="select select-sm select-bordered" id="end-year">
+              <option value="2024">2024</option>
+              <!-- Plus d'options -->
+            </select>
+            <select class="select select-sm select-bordered" id="end-month">
+              <option value="June">Juin</option>
+              <!-- Plus d'options -->
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

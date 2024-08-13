@@ -4,7 +4,7 @@
  * @param {object[]} data The data to analyze
  * @returns {object} An object with the min and max dates
  */
-function getDateRange(data) {
+export function getDateRange(data) {
   const dates = data.map((d) => new Date(d.DT_DEBUT_MOIS));
   const minDate = new Date(Math.min(...dates));
   const maxDate = new Date(Math.max(...dates));
@@ -62,7 +62,7 @@ function filterRegions(rawData, regionIds) {
  * @param {number} endMonth The end month for filtering
  * @returns {object[]} The prepared stacked data
  */
-function prepareStackedData(
+export function prepareStackedData(
   rawData,
   regionIdsWanted,
   startYear,
@@ -98,7 +98,7 @@ function prepareStackedData(
  * @param {number} month The month to filter (1-12)
  * @returns {number} The total mortgages for the specified year and month
  */
-function computeTotalMortgages(data, year, month) {
+export function computeTotalMortgages(data, year, month) {
   const filteredData = data.filter(d => {
     const date = new Date(d.date);
     return date.getUTCFullYear() === year && (date.getUTCMonth() + 1) === month;

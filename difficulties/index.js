@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   function loadData() {
-    d3.json("quebec-with-regions.geojson")
+    d3.json("../quebec-with-regions.geojson")
       .then((data) => {
         geojsonData = data;
         drawMap();

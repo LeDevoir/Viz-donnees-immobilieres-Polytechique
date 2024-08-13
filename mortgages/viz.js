@@ -1,4 +1,7 @@
-function createScales(width, height) {
+import { colorMap } from "./constants";
+import { computeTotalMortgages } from './preprocess';
+
+export function createScales(width, height) {
   const xScale = d3.scaleTime().range([0, width]);
   const yScale = d3.scaleLinear().range([height, 0]);
   const color = d3
@@ -9,7 +12,7 @@ function createScales(width, height) {
   return { xScale, yScale, color };
 }
 
-function setScaleDomains(xScale, yScale, data, series) {
+export function setScaleDomains(xScale, yScale, data, series) {
   xScale.domain([
     d3.min(data, (d) => new Date(d.date)),
     d3.max(data, (d) => new Date(d.date)),
@@ -17,7 +20,7 @@ function setScaleDomains(xScale, yScale, data, series) {
   yScale.domain([0, d3.max(series, (layer) => d3.max(layer, (d) => d[1]))]);
 }
 
-function createStack(regionIdsWanteds) {
+export function createStack(regionIdsWanteds) {
   return d3
     .stack()
     .keys(regionIdsWanteds)
@@ -26,7 +29,7 @@ function createStack(regionIdsWanteds) {
     .offset(d3.stackOffsetNone);
 }
 
-function drawChart(svg, series, xScale, yScale, color, height, width, regionsMaps) {
+export function drawChart(svg, series, xScale, yScale, color, height, width, regionsMaps) {
   // Draw the layers
   svg
     .selectAll(".layer")
@@ -161,7 +164,7 @@ function drawChart(svg, series, xScale, yScale, color, height, width, regionsMap
   });
 }
 
-function drawMarkers(svg, xScale, yScale, height, data) {
+export function drawMarkers(svg, xScale, yScale, height, width, data, markerStartYear, markerEndYear, markerStartMonth, markerEndMonth) {
   const markerAData = new Date(markerStartYear, markerStartMonth - 1);
   const markerBData = new Date(markerEndYear, markerEndMonth - 1);
 
@@ -172,19 +175,11 @@ function drawMarkers(svg, xScale, yScale, height, data) {
   const minMonth = minDate.getUTCMonth()+1;
   const maxYear = maxDate.getUTCFullYear();
   const maxMonth = maxDate.getUTCMonth()+1;
-  console.log(maxYear)
-  console.log(maxMonth+"MAXMONTH");
-  console.log(markerEndMonth + "ENDmoNTH")
 
-
-  console.log(data);
-  // Remove existing message if any
   svg.selectAll(".invalid-marker-message").remove();
 
   // Validate marker dates
   let invalidMarkers = false;
-  console.log(markerAData);
-  console.log(markerBData);
   if ( markerStartYear < minYear  || ( markerStartYear === minYear && markerStartMonth < minMonth) || markerEndYear > maxYear || markerEndYear === maxYear && markerEndMonth > maxMonth) {
     invalidMarkers = true;
     svg.append('text')
@@ -267,7 +262,6 @@ function drawMarkers(svg, xScale, yScale, height, data) {
           .attr('stroke-width', 2)
           .attr('stroke-dasharray', '5,5');
       } else if(xScale(markerAData) > 800 && xScale(markerBData) > 800) {
-        console.log(xScale(markerBData) + "TRY1000")
         svg.append('text')
           .attr('class', 'net-variation-text')
           .attr('x', 680)
@@ -286,7 +280,6 @@ function drawMarkers(svg, xScale, yScale, height, data) {
           .attr('stroke-width', 2)
           .attr('stroke-dasharray', '5,5');
       } else {
-        console.log(xScale(markerBData) + "TRY1000")
         svg.append('text')
           .attr('class', 'net-variation-text')
           .attr('x', xScale(markerBData) - 100 )
@@ -308,7 +301,6 @@ function drawMarkers(svg, xScale, yScale, height, data) {
     } else {
 
       if( xScale(markerAData) > 600){
-        console.log(xScale(markerBData));
         svg.append('text')
           .attr('class', 'net-variation-text')
           .attr('x', 560 )
@@ -327,7 +319,6 @@ function drawMarkers(svg, xScale, yScale, height, data) {
           .attr('stroke-width', 2)
           .attr('stroke-dasharray', '5,5');
       } else if( xScale(markerBData) < 350 && xScale(markerAData) < 150){
-        console.log(xScale(markerBData));
         svg.append('text')
           .attr('class', 'net-variation-text')
           .attr('x', 0 )

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Le Devoir: Marché immobilier</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@4.12.7/dist/full.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module" crossorigin src="../assets/difficulties-vywInBbU.js"></script>
+    <link rel="modulepreload" crossorigin href="../assets/styles-DoX-3eds.js">
+    <link rel="stylesheet" crossorigin href="../assets/styles-jvYf2wiv.css">
+  </head>
+  <body
+    data-theme="light"
+    class="grid min-h-screen w-full lg:grid-cols-[135px_1fr_280px]"
+  >
+    <div class="flex h-full flex-col gap-4 p-4 bg-neutral-400">
+      <a class="p-2 font-bold btn" href="../index.html">Accueil</a>
+      <a class="p-2 font-bold btn" href="../transfers/index.html">Transferts</a>
+      <a class="p-2 font-bold btn" href="../sales/index.html">Ventes</a>
+      <a class="p-2 font-bold btn btn-neutral" href="../difficulties/index.html">Difficultés financières</a>
+      <a class="p-2 font-bold btn" href="../mortgages/index.html">Hypothèques</a>
+    </div>
+
+    <div class="relative space-y-4">
+        <h1 class="text-lg font-extrabold">
+            La détresse financière au Québec selon les catégories par région
+          </h1>
+      <svg class="mx-auto" id="mapSvg"></svg>
+      <svg class="mx-auto" id="legendSvg"></svg>
+      <svg id="messageSvg"></svg>
+      <div
+        id="tooltip"
+        class="absolute pointer-events-none p-2 rounded-lg bg-white border text-xs"
+        style="visibility: hidden"
+      ></div>
+    </div>
+    <div class="flex h-full flex-col gap-4 p-4 bg-neutral-400">
+      <div class="time_filter" id="time_filter">
+        <label class="text-white font-bold text-lg" for="start-year"
+          >Choisissez la période à couvrir</label
+        >
+        <div class="grid gap-1 grid-cols-[2fr_3fr_3fr] items-center">
+          <label for="startYearSelect" class="text-white font-bold"
+            >Début</label
+          >
+          <select
+            class="select select-sm select-bordered"
+            id="startYearSelect"
+          ></select>
+          <select
+            class="select select-sm select-bordered"
+            id="startMonthSelect"
+          ></select>
+          <label for="endYearSelect" class="text-white font-bold">Fin</label>
+          <select
+            class="select select-sm select-bordered"
+            id="endYearSelect"
+          ></select>
+          <select
+            class="select select-sm select-bordered"
+            id="endMonthSelect"
+          ></select>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Le Devoir: Marché immobilier</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <link href="./output.css" rel="stylesheet" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@4.12.7/dist/full.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <style>
+      .tooltip {
+        position: absolute;
+        text-align: left;
+        width: auto;
+        height: auto;
+        padding: 10px;
+        font: 12px sans-serif;
+        background: lightsteelblue;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        pointer-events: none;
+        color: #333;
+      }
+    </style>
+    <script type="module" crossorigin src="../assets/transfers-CtZFeiZk.js"></script>
+    <link rel="modulepreload" crossorigin href="../assets/styles-DoX-3eds.js">
+    <link rel="stylesheet" crossorigin href="../assets/styles-jvYf2wiv.css">
+    <link rel="stylesheet" crossorigin href="../assets/output-hrtgakXM.css">
+  </head>
+  <body
+    data-theme="light"
+    class="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[135px_1fr]"
+  >
+    <div class="flex h-full flex-col gap-4 p-4 bg-neutral-400">
+      <a class="p-2 font-bold btn" href="../index.html">Accueil</a>
+      <a class="p-2 font-bold btn btn-neutral" href="../transfers/index.html">Transferts</a>
+      <a class="p-2 font-bold btn" href="../sales/index.html">Ventes</a>
+      <a class="p-2 font-bold btn" href="../difficulties/index.html">Difficultés financières</a>
+      <a class="p-2 font-bold btn" href="../mortgages/index.html">Hypothèques</a>
+    </div>
+
+    <div class="flex flex-col flex-1 bg-gray-100">
+      <h1 class="text-lg font-extrabold">
+        Le nombre de requêtes de transfert de propriétés au Québec par région au
+        fil du temps
+      </h1>
+      <div class="controls mb-4 flex p-4 items-center justify-center">
+        <label for="timeSelector" class="mr-2"
+          >Sélectionner l'interval de temps:</label
+        >
+        <select id="timeSelector" class="p-2 border rounded-md">
+          <option value="month">Mensuel</option>
+          <option value="year">Annuel</option>
+        </select>
+        <label for="dateSelector" class="ml-4 mr-2"
+          >Sélectionner la date:</label
+        >
+        <select id="dateSelector" class="p-2 border rounded-md">
+          <option value="Mois-Année">Mois-Année</option>
+        </select>
+        <label for="regionSelector" class="ml-4 mr-2"
+          >Sélectionner les régions:</label
+        >
+        <select id="regionSelector" class="p-2 border rounded-md">
+          <option value="Tout">Tout</option>
+        </select>
+      </div>
+      <div class="flex justify-center">
+        <div id="heatmap" class="w-9/12 place-content-center"></div>
+        <div id="legend" class="ml-5"></div>
+      </div>
+    </div>
+
+  </body>
+</html>
