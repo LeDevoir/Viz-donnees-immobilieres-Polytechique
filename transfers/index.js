@@ -6,7 +6,8 @@ let localMax=0;
 let legendGradient;
 let legendSvg;
 d3.csv(
-  "https://www.donneesquebec.ca/recherche/dataset/statistiques-du-registre-foncier-du-quebec-sur-le-marche-immobilier/resource/15747fac-ab86-4334-814e-1aa4633430ee/download/donn_prix_vente_reqst.csv",
+  //"https://www.donneesquebec.ca/recherche/dataset/statistiques-du-registre-foncier-du-quebec-sur-le-marche-immobilier/resource/15747fac-ab86-4334-814e-1aa4633430ee/download/donn_prix_vente_reqst.csv",
+  "https://www.donneesquebec.ca/recherche/dataset/93ce9cb5-0811-48e5-885e-98dce192d293/resource/7b8e1f0b-8715-491a-a398-685ecae6438d/download/donn_transf_prop_reqst.csv",
 ).then((data) => {
   const regionNames = {
     1: "Bas-Saint-Laurent",

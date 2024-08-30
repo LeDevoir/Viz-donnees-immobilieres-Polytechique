@@ -2,8 +2,8 @@ import requests
 
 # URLs to the CSV files
 csv_urls = [
-    "https://www.donneesquebec.ca/recherche/dataset/statistiques-du-registre-foncier-du-quebec-sur-le-marche-immobilier/resource/d1ce4f2f-f5bc-492e-81a5-2347ed9c8c1a/download/donn_hypoth_reqst.csv",
-    "https://www.donneesquebec.ca/recherche/dataset/statistiques-du-registre-foncier-du-quebec-sur-le-marche-immobilier/resource/15747fac-ab86-4334-814e-1aa4633430ee/download/donn_prix_vente_reqst.csv",
+    "https://www.donneesquebec.ca/recherche/dataset/93ce9cb5-0811-48e5-885e-98dce192d293/resource/7b8e1f0b-8715-491a-a398-685ecae6438d/download/donn_transf_prop_reqst.csv",
+    "https://www.donneesquebec.ca/recherche/dataset/93ce9cb5-0811-48e5-885e-98dce192d293/resource/c05ac154-4745-46d0-a158-e84655f66084/download/donn_prix_vente_reqst.csv",
     "https://www.donneesquebec.ca/recherche/dataset/statistiques-du-registre-foncier-du-quebec-sur-le-marche-immobilier/resource/739ac2bb-e549-4bcd-893d-768e37a03af6/download/donn_hypoth_reqst.csv",
     "https://www.donneesquebec.ca/recherche/dataset/statistiques-du-registre-foncier-du-quebec-sur-le-marche-immobilier/resource/84ed216a-3284-4d05-aa85-d2ef30dd5d0f/download/donn_diff_fin_reqst.csv",
 ]
